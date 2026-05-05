@@ -1,0 +1,81 @@
+{
+  "title": "StromAudit Pro – Energie-Compliance & ESG Pre-Audit",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "plz": {
+      "title": "Postleitzahl (PLZ)",
+      "type": "string",
+      "description": "5-stellige deutsche Postleitzahl des Standorts der Abnahmestelle. Bestimmt den Netzbetreiber und das regionale Netzentgelt.",
+      "editor": "textfield",
+      "prefill": "80331",
+      "pattern": "^[0-9]{5}$"
+    },
+    "jahresverbrauch_kwh": {
+      "title": "Jahresverbrauch (kWh)",
+      "type": "number",
+      "description": "Gesamter Stromverbrauch pro Jahr in kWh an der Abnahmestelle. Aus Stromrechnung oder Lastgangmessung.",
+      "editor": "number",
+      "prefill": 125000,
+      "minimum": 1000
+    },
+    "spitzenlast_kw": {
+      "title": "Spitzenlast / Jahresleistungsmaximum (kW)",
+      "type": "number",
+      "description": "Maximale gemessene Leistung (Peak Load) in kW. Relevant für Leistungspreis und §19 StromNEV Antragsrecht. Aus Lastganganalyse oder Jahreshöchstlastmessung.",
+      "editor": "number",
+      "prefill": 45,
+      "minimum": 0
+    },
+    "messstellenbetrieb_eur": {
+      "title": "Messstellenbetrieb (€/Jahr)",
+      "type": "number",
+      "description": "Jährliche Kosten für den Messstellenbetrieb gemäß §21b EnWG. Aus aktueller Netzentgelt-Rechnung.",
+      "editor": "number",
+      "prefill": 250,
+      "minimum": 0
+    },
+    "is_producing": {
+      "title": "Produzierendes Gewerbe (§9b StromStG)",
+      "type": "boolean",
+      "description": "Aktivieren wenn das Unternehmen zum Produzierenden Gewerbe gehört (§9b Abs.2a StromStG). Berechtigt zur reduzierten Stromsteuer von 0,05 ct/kWh statt 2,05 ct/kWh. Prüfen mit dem Steuerberater.",
+      "editor": "checkbox",
+      "default": false
+    },
+    "unternehmen": {
+      "title": "Unternehmen / Betriebsbezeichnung (optional)",
+      "type": "string",
+      "description": "Name des Unternehmens oder der Abnahmestelle. Erscheint auf dem Audit-Bericht.",
+      "editor": "textfield",
+      "prefill": ""
+    },
+    "anschrift": {
+      "title": "Straße & Hausnummer (optional)",
+      "type": "string",
+      "description": "Straße und Hausnummer der Abnahmestelle. Erscheint auf dem Audit-Bericht.",
+      "editor": "textfield",
+      "prefill": ""
+    },
+    "berichtsjahr": {
+      "title": "Berichtsjahr",
+      "type": "integer",
+      "description": "Kalenderjahr des Berichts. Standard: aktuelles Jahr.",
+      "editor": "number",
+      "prefill": 2026,
+      "minimum": 2020,
+      "maximum": 2030
+    },
+    "projekt_referenz": {
+      "title": "Projekt-Referenz / Dossiernummer (optional)",
+      "type": "string",
+      "description": "Interne Referenznummer des Beraters oder Dossiernummer. Erscheint auf dem Audit-Bericht zur eindeutigen Zuordnung.",
+      "editor": "textfield",
+      "prefill": ""
+    }
+  },
+  "required": [
+    "plz",
+    "jahresverbrauch_kwh",
+    "spitzenlast_kw"
+  ]
+}
