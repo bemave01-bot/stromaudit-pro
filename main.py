@@ -683,7 +683,38 @@ def generiere_html(
         pct = kalk["anteile_pct"].get(k, 0)
         aufsch_rows += f"<tr><td>{label}</td><td class='r'>{de_eur(v)} €</td><td class='r'>{de_num(pct,1)}%</td></tr>"
 
-    # ── Compliance ──────────────────────────────────────────────────────────
+    # ── Pie-chart SVG (kostenverdeling) ────────────────────────────────────
+    pie_colors = ["#1a4a7a","#2e7d32","#f0a500","#c0392b","#7b1fa2","#00796b","#455a64","#e65100","#37474f","#5d4037"]
+    pie_items  = [(labels[k], aufsch.get(k, 0), kalk["anteile_pct"].get(k, 0)) for k in labels]
+    pie_items  = [(l, v, p) for l, v, p in pie_items if v > 0]
+    brutto     = kalk["brutto_gesamt_eur"] or 1
+    cx, cy, r  = 130, 110, 90
+    angle      = -90.0
+    pie_slices = ""
+    pie_legend = ""
+    for i, (label, val, pct) in enumerate(pie_items):
+        sweep  = (val / brutto) * 360
+        a1r    = angle * 3.14159265 / 180
+        a2r    = (angle + sweep) * 3.14159265 / 180
+        lf     = 1 if sweep > 180 else 0
+        x1, y1 = cx + r * (a1r.__class__.__name__ and __import__('math').cos(a1r)), cy + r * __import__('math').sin(a1r)
+        x2, y2 = cx + r * __import__('math').cos(a2r), cy + r * __import__('math').sin(a2r)
+        color  = pie_colors[i % len(pie_colors)]
+        pie_slices += f'<path d="M{cx},{cy} L{x1:.1f},{y1:.1f} A{r},{r} 0 {lf},1 {x2:.1f},{y2:.1f} Z" fill="{color}" stroke="#fff" stroke-width="1.5"/>'
+        ly     = 18 + i * 16
+        pie_legend += f'<rect x="270" y="{ly-10}" width="11" height="11" fill="{color}" rx="2"/><text x="286" y="{ly}" font-size="10" fill="#333">{pct:.1f}% – {label[:38]}</text>'
+        angle += sweep
+    pie_chart = f"""
+    <div style="margin:18px 0 8px">
+      <div style="font-size:12px;font-weight:600;color:#0a2540;margin-bottom:8px">Kostenverdeling (Anteil Brutto)</div>
+      <svg viewBox="0 0 680 {18 + len(pie_items)*16 + 10}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;height:auto">
+        {pie_slices}
+        <circle cx="{cx}" cy="{cy}" r="38" fill="white"/>
+        <text x="{cx}" y="{cy-6}" text-anchor="middle" font-size="11" font-weight="700" fill="#0a2540">{de_num(brutto/1000,1)}k</text>
+        <text x="{cx}" y="{cy+9}" text-anchor="middle" font-size="9" fill="#555">EUR Brutto</text>
+        {pie_legend}
+      </svg>
+    </div>"""
     comp_rows = ""
     for c in comp["checks"]:
         emp       = f"<br><em style='font-size:11px'>{esc(c['empfehlung'])}</em>" if c["empfehlung"] else ""
@@ -695,7 +726,7 @@ def generiere_html(
     ns_block = ""
     if ns_rows:
         ns_block = f"""
-        <h3>Empfohlene nächste Schritte</h3>
+        <h3>📅 Empfohlene nächste Schritte</h3>
         <table><thead><tr><th>Maßnahme</th><th>Empfohlene Frist</th></tr></thead>
         <tbody>{ns_rows}</tbody></table>"""
 
@@ -747,6 +778,30 @@ def generiere_html(
     meta_fallback = "⚠️ Ja – Fallback-Wert" if markt.get("is_fallback") else "✅ Nein – Live-Daten"
     data_age     = f"{markt.get('data_age_hours', '—')} Stunden" if not markt.get("is_fallback") else "Nicht verfügbar (Fallback aktiv)"
 
+    # ── Einsparpotenziale ───────────────────────────────────────────────────
+    peak_shaving_theoretisch = round(kalk["leistungskosten_netto_eur"] * 0.10, 0)
+    einspar_9b   = kalk["stromsteuer_entlastung_9b_eur"]
+    einspar_rows = ""
+    if prod and einspar_9b > 0:
+        einspar_rows += f"""<tr><td>§9b StromStG – Stromsteuerentlastung</td>
+          <td class="r"><strong>{de_eur(einspar_9b)} €/Jahr</strong></td>
+          <td>Bereits angewendet – Jahresausgleich beim HZA beantragen</td></tr>"""
+    einspar_rows += f"""<tr><td>Peak-Shaving – Spitzenlastreduzierung (theoretisch)</td>
+          <td class="r">{de_eur(peak_shaving_theoretisch)} €/Jahr</td>
+          <td>Schätzung bei 10% Reduzierung ({de_num(kw,1)} → {de_num(kw*0.9,1)} kW) – abhängig vom Lastprofil</td></tr>
+        <tr><td>§19 Abs.2 StromNEV – Individuelle Netzentgelte</td>
+          <td class="r">Prüfung erforderlich</td>
+          <td>Grundvoraussetzungen teilweise erfüllt – Benutzungsdauer durch Netzbetreiber prüfen lassen</td></tr>"""
+    blok_einspar = f"""
+<div class="sec">
+<h2>2b · Einsparpotenziale (Übersicht)</h2>
+<table>
+  <thead><tr><th>Maßnahme</th><th class="r">Potenzial</th><th>Hinweis</th></tr></thead>
+  <tbody>{einspar_rows}</tbody>
+</table>
+<p class="src">Peak-Shaving-Wert ist eine theoretische Schätzung ohne Gewähr. §19-Potenzial nur nach Netzbetreiberprüfung realisierbar.</p>
+</div>"""
+
     return f"""<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -771,13 +826,13 @@ body{{font-family:'Segoe UI',Arial,sans-serif;font-size:13px;color:#1a1a1a;backg
 .hdr-meta strong{{font-size:12px;color:#7ecef4}}
 .badge-audit{{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:4px;padding:4px 12px;font-size:11px;margin-top:12px}}
 .disc-bar{{background:#fffbe6;border-left:5px solid #f0a500;padding:10px 48px;font-size:11px;color:#6b4c00;line-height:1.6}}
-.sec{{padding:24px 48px;border-bottom:1px solid #eaedf3}}
+.sec{{padding:24px 48px;border-bottom:1px solid #eaedf3;page-break-inside:avoid}}
 .sec h2{{font-size:14px;font-weight:700;color:#0a2540;text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid #0a2540;padding-bottom:5px;margin-bottom:16px}}
 .sec h3{{font-size:13px;color:#1a4a7a;margin:18px 0 10px;font-weight:600}}
-.kpi-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:4px}}
-.kpi{{background:#f0f4ff;border:1px solid #c5d5f0;border-radius:7px;padding:13px 15px}}
+.kpi-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px}}
+.kpi{{background:#f0f4ff;border:1px solid #c5d5f0;border-radius:7px;padding:10px 13px;page-break-inside:avoid}}
 .kpi .lbl{{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.4px}}
-.kpi .val{{font-size:20px;font-weight:700;color:#0a2540;margin:3px 0 2px}}
+.kpi .val{{font-size:18px;font-weight:700;color:#0a2540;margin:2px 0 1px}}
 .kpi .sub{{font-size:10px;color:#777}}
 .kpi.grn{{background:#e8f8ee;border-color:#82c99a}}.kpi.grn .val{{color:#1a7a3c}}
 .kpi.org{{background:#fff3e0;border-color:#ffb74d}}.kpi.org .val{{color:#c75000}}
@@ -805,13 +860,15 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
   body{{background:#fff}}
   .wrap{{box-shadow:none}}
   .print-bar,.btn-print{{display:none!important}}
-  .sec{{padding:14px 24px}}
+  .sec{{padding:14px 24px;page-break-inside:avoid}}
   .hdr{{padding:18px 24px}}
   .disc-bar{{padding:8px 24px}}
   .ftr{{padding:14px 24px}}
   table{{page-break-inside:avoid}}
   .kpi-grid{{page-break-inside:avoid}}
+  .kpi{{page-break-inside:avoid}}
   .box{{page-break-inside:avoid}}
+  h2,h3{{page-break-after:avoid}}
 }}
 </style>
 </head>
@@ -898,6 +955,8 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
 </div>
 </div>
 
+{blok_einspar}
+
 <div class="sec">
 <h2>3 · Vollständige Kostenaufschlüsselung 2026</h2>
 {blok_9b}{blok_19}{spitzenlast_hinweis}
@@ -910,6 +969,7 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
     <td class="r">100%</td>
   </tr></tfoot>
 </table>
+{pie_chart}
 <h3>Angewendete Tarifsätze 2026 (gesetzliche Grundlage)</h3>
 <table>
   <tr><th>Parameter</th><th>Wert</th><th>Rechtsgrundlage</th></tr>
