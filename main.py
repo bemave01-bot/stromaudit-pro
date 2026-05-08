@@ -97,10 +97,11 @@ GESETZ_REFS = [
     "EnWG (Energiewirtschaftsgesetz)",
     "StromStG §9b (Spitzenausgleich prod. Gewerbe)",
     "KWKG 2016/2020 (Kraft-Wärme-Kopplungsgesetz)",
-    "StromNEV §19 Abs.2 (Aufschlag bes. Netznutzung)",
+    "StromNEV §19 Abs.2 (Aufschlag bes. Netznutzung / individuelle Netzentgelte)",
     "EEG 2023 (Erneuerbare-Energien-Gesetz)",
     "KAV §2 (Konzessionsabgabenverordnung)",
     "UStG §12 (Mehrwertsteuer 19%)",
+    "MsbG §20 (Messstellenbetriebsgesetz – Messstellenbetrieb)",
     "EU CSRD 2022/2464 / ESRS E1 (Klimawandel, Scope 2)",
     "GHG Protocol Corporate Standard (Scope 1/2/3)",
     "ISO 50001:2018 (Energiemanagementsystem)",
@@ -552,15 +553,26 @@ def pruefe_compliance(kwh: float, kw: float, prod: bool) -> dict:
         frist_9b = f"31.12.{heute.year}"
         next_steps.append({"aktion": "§9b StromStG Jahresausgleich beim zuständigen HZA beantragen", "frist": f"Bis {frist_9b}"})
 
-    stromnev = kw >= 30 and kwh >= 30_000
+    stromnev_basis = kw >= 30 and kwh >= 30_000
+    vls = kwh / kw if kw > 0 else 0
+    stromnev_vls   = vls >= 7000  # §19 Abs.2 Satz 1 StromNEV: ≥7000 Volllaststunden
+    stromnev_status = (
+        "⚠️ Grundvoraussetzungen (≥30 kW, ≥30.000 kWh) erfüllt – jedoch Benutzungsdauer "
+        f"(ca. {de_num(vls,0)} Volllaststunden) unter 7.000 h/Jahr: §19 Abs.2 Satz 1 nur bei "
+        "atypischer Netznutzung (§19 Abs.2 Satz 2) anwendbar. Netzbetreiber prüfen lassen."
+        if stromnev_basis and not stromnev_vls else
+        "⚠️ Alle Voraussetzungen §19 Abs.2 Satz 1 erfüllt – Antrag beim Netzbetreiber empfohlen"
+        if stromnev_basis and stromnev_vls else
+        "○ Schwellenwert nicht erreicht (< 30 kW oder < 30.000 kWh)"
+    )
     checks.append({
         "norm":       "§19 Abs.2 StromNEV",
-        "titel":      "Individuelle Netzentgelte (ab 30 kW + 30.000 kWh)",
-        "relevant":   stromnev,
-        "status":     "⚠️ Voraussetzungen erfüllt – Antrag empfohlen" if stromnev else "○ Schwellenwert nicht erreicht",
-        "empfehlung": "Antrag auf individuelle Netzentgelte beim Netzbetreiber stellen" if stromnev else None,
+        "titel":      "Individuelle Netzentgelte (ab 30 kW + 30.000 kWh + ≥7.000 Volllaststunden)",
+        "relevant":   stromnev_basis,
+        "status":     stromnev_status,
+        "empfehlung": "Antrag auf individuelle Netzentgelte beim Netzbetreiber stellen – nur nach Prüfung der Benutzungsdauer" if stromnev_basis else None,
     })
-    if stromnev:
+    if stromnev_basis and stromnev_vls:
         next_steps.append({"aktion": "Antrag individuelle Netzentgelte beim Netzbetreiber einreichen", "frist": "Nächstes Quartal"})
 
     csrd = kwh > 500_000
@@ -577,8 +589,8 @@ def pruefe_compliance(kwh: float, kw: float, prod: bool) -> dict:
     checks.append({
         "norm":       "§2 KAV",
         "titel":      "Konzessionsabgabe Sondervertragskunden",
-        "relevant":   stromnev,
-        "status":     "✅ Sondervertragstarif (0,11 ct/kWh) angewendet" if stromnev else "○ Haushaltstarif-Satz angewendet",
+        "relevant":   stromnev_basis,
+        "status":     "✅ Sondervertragstarif (0,11 ct/kWh) angewendet" if stromnev_basis else "○ Haushaltstarif-Satz angewendet",
         "empfehlung": None,
     })
 
@@ -659,10 +671,10 @@ def generiere_html(
         "konzessionsabgabe":    "Konzessionsabgabe (§2 KAV)",
         "kwkg_umlage":          "KWKG-Umlage 2026",
         "offshore_umlage":      "Offshore-Netzumlage 2026 (§17f EnWG)",
-        "stromnev_aufschlag":   f"§19 StromNEV 2026 – Kategorie {kalk['stromnev_kategorie'][:1]}",
+        "stromnev_aufschlag":   f"§19 StromNEV-Umlage 2026 – Kategorie {kalk['stromnev_kategorie'][:1]} (Letztverbraucherumlage)",
         "stromsteuer":          "Stromsteuer (§3 StromStG)" + (" + §9b Entlastung" if prod else ""),
         "leistungskosten":      f"Leistungskosten ({de_num(kw,1)} kW × {t['leistungspreis_eur_kw']:.0f} €/kW/Jahr)",
-        "messstellenbetrieb":   "Messstellenbetrieb (§21b EnWG)",
+        "messstellenbetrieb":   "Messstellenbetrieb (§20 MsbG)",
         "mwst_19pct":           "Mehrwertsteuer 19% (§12 UStG)",
     }
     aufsch_rows = ""
@@ -702,10 +714,19 @@ def generiere_html(
     if kw >= 30 and kwh >= 30_000:
         blok_19 = f"""
         <div class="box blue">
-          <strong>§19 Abs.2 StromNEV – Individuelle Netzentgelte prüfen</strong><br>
-          Spitzenlast {de_num(kw,1)} kW und Jahresverbrauch {de_kwh(kwh)} kWh erfüllen die Grundvoraussetzungen
-          für reduzierte Netzentgelte beim Netzbetreiber <strong>{esc(netz['operator'])}</strong>.<br>
-          <small>Antrag beim Netzbetreiber stellen. Einsparungspotenzial kann erheblich sein.</small>
+          <strong>§19 Abs.2 StromNEV – Hinweis zu Netzentgelten und Umlage</strong><br>
+          <strong>§19-Umlage (Kostenposition):</strong> In dieser Kalkulation ist die gesetzliche §19-StromNEV-Umlage
+          als Kostenkomponente enthalten (Kategorie {esc(kalk['stromnev_kategorie'])}). Diese Umlage zahlen
+          <em>alle</em> Letztverbraucher zur Finanzierung individueller Netzentgelte für Großabnehmer.<br><br>
+          <strong>Individuelle Netzentgelte (§19 Abs.2 Satz 1 StromNEV):</strong>
+          Die Grundvoraussetzungen Spitzenlast ≥ 30 kW und Jahresverbrauch ≥ 30.000 kWh sind mit
+          {de_num(kw,1)} kW bzw. {de_kwh(kwh)} kWh erfüllt. <strong>Zusätzlich</strong> ist gemäß
+          §19 Abs.2 Satz 1 StromNEV erforderlich, dass die Jahresbenutzungsdauer ≥ 7.000 Volllaststunden
+          beträgt <em>oder</em> eine atypische Netznutzung (§19 Abs.2 Satz 2 StromNEV) vorliegt.
+          Bei {de_kwh(kwh)} kWh / {de_num(kw,1)} kW ergibt sich eine rechnerische Benutzungsdauer von
+          ca. {de_num(kwh/kw if kw > 0 else 0, 0)} Volllaststunden – eine Prüfung durch den
+          Netzbetreiber ist daher zwingend erforderlich, bevor ein Antrag gestellt wird.<br>
+          <small>Antrag beim Netzbetreiber: Einsparungspotenzial nur bei nachgewiesener Voraussetzungserfüllung.</small>
         </div>"""
 
     spitzenlast_hinweis = f"""
@@ -843,7 +864,7 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
       <td><strong>Netzbetreiber</strong></td><td>{esc(netz['operator'])}</td></tr>
   <tr><td><strong>Jahresverbrauch</strong></td><td>{de_kwh(kwh)} kWh</td>
       <td><strong>Spitzenlast</strong></td><td>{de_num(kw,1)} kW</td></tr>
-  <tr><td><strong>Messstellenbetrieb</strong></td><td>{de_eur(data['messstellenbetrieb_eur'])} €/Jahr</td>
+  <tr><td><strong>Messstellenbetrieb (§20 MsbG)</strong></td><td>{de_eur(data['messstellenbetrieb_eur'])} €/Jahr</td>
       <td><strong>Prod. Gewerbe §9b StromStG</strong></td><td>{"✅ Ja – Vergünstigung angewendet" if prod else "○ Nein"}</td></tr>
   <tr><td><strong>Berichtsjahr</strong></td><td>{data['berichtsjahr']}</td>
       <td><strong>§19 StromNEV Kategorie</strong></td><td>{esc(kalk['stromnev_kategorie'])}</td></tr>
@@ -893,18 +914,24 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
 <table>
   <tr><th>Parameter</th><th>Wert</th><th>Rechtsgrundlage</th></tr>
   <tr><td>Day-Ahead Marktpreis (SMARD)</td><td class="r">{de_num(t['marktpreis_eur_kwh']*1000,2)} EUR/MWh</td><td>EPEX Spot / EnWG §1</td></tr>
-  <tr><td>Beschaffung inkl. Marge ({t['marge_pct']:.0f}%)</td><td class="r">{de_ct(t['beschaffung_inkl_marge']*100,4)} ct/kWh</td><td>Marktüblich</td></tr>
+  <tr><td>Beschaffung inkl. Marge ({t['marge_pct']:.0f}% – Schätzwert, vertragsabhängig)</td><td class="r">{de_ct(t['beschaffung_inkl_marge']*100,4)} ct/kWh</td><td>Marktüblich (keine gesetzliche Vorgabe)</td></tr>
   <tr><td>Netzentgelt variabel</td><td class="r">{de_ct(t['netzentgelt_variabel']*100)} ct/kWh</td><td>§21 EnWG / BNetzA</td></tr>
   <tr><td>Konzessionsabgabe</td><td class="r">{de_ct(t['konzessionsabgabe']*100)} ct/kWh</td><td>§2 KAV</td></tr>
   <tr><td>KWKG-Umlage 2026</td><td class="r">{de_ct(t['kwkg_umlage']*100)} ct/kWh</td><td>KWKG 2016/2020</td></tr>
   <tr><td>Offshore-Netzumlage 2026</td><td class="r">{de_ct(t['offshore_umlage']*100)} ct/kWh</td><td>§17f EnWG</td></tr>
   <tr><td>§19 StromNEV Aufschlag</td><td class="r">{de_ct(t['stromnev19_umlage']*100)} ct/kWh</td><td>§19 Abs.2 StromNEV</td></tr>
   <tr><td>Stromsteuer</td><td class="r">{de_ct(t['stromsteuer']*100)} ct/kWh {"(§9b-Satz)" if prod else "(Regelsatz)"}</td><td>§3 StromStG{" / §9b" if prod else ""}</td></tr>
-  <tr><td>Leistungspreis</td><td class="r">{de_eur(t['leistungspreis_eur_kw'])} €/kW/Jahr</td><td>§21 EnWG</td></tr>
+  <tr><td>Leistungspreis (Schätzwert – regional variabel)</td><td class="r">{de_eur(t['leistungspreis_eur_kw'])} €/kW/Jahr</td><td>§21 EnWG / BNetzA (regionaler NNB)</td></tr>
+  <tr><td>Messstellenbetrieb (§20 MsbG)</td><td class="r">{de_eur(data['messstellenbetrieb_eur'])} €/Jahr</td><td>§20 MsbG / Messstellenvertrag</td></tr>
   <tr><td>MwSt.</td><td class="r">{de_num(t['mwst_satz']*100,0)}%</td><td>§12 UStG</td></tr>
 </table>
 <p class="src">Umlagen-Quelle: Übertragungsnetzbetreiber (ÜNB) – amtliche Veröffentlichung Oktober 2025.
-Netzentgelte: Bundesnetzagentur (BNetzA) / regionaler Netzbetreiber. Marktpreis: SMARD Bundesnetzagentur.</p>
+Netzentgelte: Bundesnetzagentur (BNetzA) / regionaler Netzbetreiber. Marktpreis: SMARD Bundesnetzagentur.<br>
+<strong>Hinweis Leistungspreis:</strong> Der verwendete Leistungspreis von {de_eur(CONFIG['leistungspreis_eur_kw'])} €/kW/Jahr ist ein
+Schätzwert (regionaler Durchschnitt). Der tatsächliche Leistungspreis ist dem Netzentgelttarif des
+zuständigen Netzbetreibers zu entnehmen (§21 EnWG / BNetzA-Veröffentlichung).<br>
+<strong>Hinweis Beschaffungsmarge:</strong> Die angesetzte Marge von {CONFIG['beschaffungs_marge']*100:.0f}% auf den Day-Ahead-Marktpreis
+ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem individuellen Stromliefervertrag.</p>
 </div>
 
 <div class="sec">
