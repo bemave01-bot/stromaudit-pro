@@ -688,32 +688,39 @@ def generiere_html(
     pie_items  = [(labels[k], aufsch.get(k, 0), kalk["anteile_pct"].get(k, 0)) for k in labels]
     pie_items  = [(l, v, p) for l, v, p in pie_items if v > 0]
     brutto     = kalk["brutto_gesamt_eur"] or 1
-    cx, cy, r  = 130, 110, 90
+    cx, cy, r  = 110, 110, 95
     angle      = -90.0
     pie_slices = ""
-    pie_legend = ""
+    legend_html = ""
+    import math
     for i, (label, val, pct) in enumerate(pie_items):
         sweep  = (val / brutto) * 360
-        a1r    = angle * 3.14159265 / 180
-        a2r    = (angle + sweep) * 3.14159265 / 180
+        a1r    = math.radians(angle)
+        a2r    = math.radians(angle + sweep)
         lf     = 1 if sweep > 180 else 0
-        x1, y1 = cx + r * (a1r.__class__.__name__ and __import__('math').cos(a1r)), cy + r * __import__('math').sin(a1r)
-        x2, y2 = cx + r * __import__('math').cos(a2r), cy + r * __import__('math').sin(a2r)
+        x1, y1 = cx + r * math.cos(a1r), cy + r * math.sin(a1r)
+        x2, y2 = cx + r * math.cos(a2r), cy + r * math.sin(a2r)
         color  = pie_colors[i % len(pie_colors)]
         pie_slices += f'<path d="M{cx},{cy} L{x1:.1f},{y1:.1f} A{r},{r} 0 {lf},1 {x2:.1f},{y2:.1f} Z" fill="{color}" stroke="#fff" stroke-width="1.5"/>'
-        ly     = 18 + i * 16
-        pie_legend += f'<rect x="270" y="{ly-10}" width="11" height="11" fill="{color}" rx="2"/><text x="286" y="{ly}" font-size="10" fill="#333">{pct:.1f}% – {label[:38]}</text>'
+        legend_html += (
+            f'<div style="display:flex;align-items:center;gap:7px;margin:3px 0">'
+            f'<span style="display:inline-block;width:12px;height:12px;background:{color};border-radius:2px;flex-shrink:0"></span>'
+            f'<span style="font-size:11px;color:#333"><strong>{pct:.1f}%</strong> – {label}</span>'
+            f'</div>'
+        )
         angle += sweep
     pie_chart = f"""
-    <div style="margin:18px 0 8px">
-      <div style="font-size:12px;font-weight:600;color:#0a2540;margin-bottom:8px">Kostenverdeling (Anteil Brutto)</div>
-      <svg viewBox="0 0 680 {18 + len(pie_items)*16 + 10}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:680px;height:auto">
-        {pie_slices}
-        <circle cx="{cx}" cy="{cy}" r="38" fill="white"/>
-        <text x="{cx}" y="{cy-6}" text-anchor="middle" font-size="11" font-weight="700" fill="#0a2540">{de_num(brutto/1000,1)}k</text>
-        <text x="{cx}" y="{cy+9}" text-anchor="middle" font-size="9" fill="#555">EUR Brutto</text>
-        {pie_legend}
-      </svg>
+    <div style="margin:18px 0 8px;page-break-inside:avoid;break-inside:avoid">
+      <div style="font-size:12px;font-weight:600;color:#0a2540;margin-bottom:10px">Kostenverdeling (Anteil Brutto)</div>
+      <div style="display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap">
+        <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" style="width:180px;height:180px;flex-shrink:0">
+          {pie_slices}
+          <circle cx="{cx}" cy="{cy}" r="42" fill="white"/>
+          <text x="{cx}" y="{cy-7}" text-anchor="middle" font-size="12" font-weight="700" fill="#0a2540">{de_num(brutto/1000,1)}k</text>
+          <text x="{cx}" y="{cy+10}" text-anchor="middle" font-size="10" fill="#555">EUR Brutto</text>
+        </svg>
+        <div style="flex:1;min-width:200px;padding-top:4px">{legend_html}</div>
+      </div>
     </div>"""
     comp_rows = ""
     for c in comp["checks"]:
@@ -726,7 +733,7 @@ def generiere_html(
     ns_block = ""
     if ns_rows:
         ns_block = f"""
-        <h3>Empfohlene nächste Schritte</h3>
+        <h3>📅 Empfohlene nächste Schritte</h3>
         <table><thead><tr><th>Maßnahme</th><th>Empfohlene Frist</th></tr></thead>
         <tbody>{ns_rows}</tbody></table>"""
 
@@ -852,6 +859,7 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
 .box.blue{{background:#e3f0ff;border-left:4px solid #1a4a7a}}
 .box.yellow{{background:#fffbe6;border-left:4px solid #f0a500}}
 .box.red{{background:#fff0f0;border-left:4px solid #c0392b}}
+.tbl-wrap{{page-break-inside:avoid;break-inside:avoid}}
 .hash-box{{font-family:monospace;font-size:10px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:8px 12px;word-break:break-all;color:#555;margin-top:8px}}
 .ftr{{background:#0a2540;color:rgba(255,255,255,.65);padding:20px 48px;font-size:10.5px;line-height:1.8}}
 .ftr strong{{color:#fff}}
@@ -931,6 +939,7 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
 
 <div class="sec">
 <h2>2 · Energie-Kennzahlen (KPIs)</h2>
+<div class="tbl-wrap">
 <div class="kpi-grid">
   <div class="kpi org"><div class="lbl">Brutto-Jahreskosten</div>
     <div class="val">{de_kwh(kalk['brutto_gesamt_eur'])} €</div><div class="sub">inkl. 19% MwSt.</div></div>
@@ -954,12 +963,14 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
     <div class="sub">Prüfbereitschaft</div></div>
 </div>
 </div>
+</div>
 
 {blok_einspar}
 
 <div class="sec">
 <h2>3 · Vollständige Kostenaufschlüsselung 2026</h2>
 {blok_9b}{blok_19}{spitzenlast_hinweis}
+<div class="tbl-wrap">
 <table>
   <thead><tr><th>Kostenkomponente</th><th class="r">EUR/Jahr</th><th class="r">Anteil</th></tr></thead>
   <tbody>{aufsch_rows}</tbody>
@@ -970,6 +981,8 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
   </tr></tfoot>
 </table>
 {pie_chart}
+</div>
+<div class="tbl-wrap">
 <h3>Angewendete Tarifsätze 2026 (gesetzliche Grundlage)</h3>
 <table>
   <tr><th>Parameter</th><th>Wert</th><th>Rechtsgrundlage</th></tr>
@@ -993,9 +1006,11 @@ zuständigen Netzbetreibers zu entnehmen (§21 EnWG / BNetzA-Veröffentlichung).
 <strong>Hinweis Beschaffungsmarge:</strong> Die angesetzte Marge von {CONFIG['beschaffungs_marge']*100:.0f}% auf den Day-Ahead-Marktpreis
 ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem individuellen Stromliefervertrag.</p>
 </div>
+</div>
 
 <div class="sec">
 <h2>4 · ESG-Bericht · Scope-2-Emissionen (ESRS E1 / GHG Protocol)</h2>
+<div class="tbl-wrap">
 <div class="kpi-grid">
   <div class="kpi grn"><div class="lbl">CO₂-Fußabdruck (Scope 2, location-based)</div>
     <div class="val">{de_num(esg['co2_footprint_tonnen'],3)} t CO₂e</div>
@@ -1006,13 +1021,15 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
     <div class="val">{de_num(esg['intensitaetsrate_t_co2_mwh'],4)}</div><div class="sub">t CO₂e/MWh</div></div>
 </div>
 <table>
-  <tr><th>Parameter</th><th>Wert</th></tr>
+  <thead><tr><th>Parameter</th><th>Wert</th></tr></thead>
+  <tbody>
   <tr><td>Scope &amp; Methodik</td><td>{esc(esg['scope'])}</td></tr>
   <tr><td>Norm</td><td>{esc(esg['norm'])}</td></tr>
   <tr><td>Emissionsfaktor</td><td>{de_num(esg['emissionsfaktor_g_co2_kwh'],0)} g CO₂e/kWh – {esc(esg['quelle'])}</td></tr>
   <tr><td>CO₂-Emissionen (Scope 2, location-based)</td><td><strong>{de_kwh(esg['co2_footprint_kg'])} kg ({de_num(esg['co2_footprint_tonnen'],3)} t CO₂e)</strong></td></tr>
   <tr><td>EU-Taxonomie-Relevanz</td><td>{esc(esg['eu_taxonomy'])}</td></tr>
   <tr><td>CSRD/ESRS-Datenpunkte</td><td>{esc(esrs_pts)}</td></tr>
+  </tbody>
 </table>
 <div class="box yellow" style="margin-top:12px">
   <strong>Hinweis für CSRD/ESRS E1-Berichterstattung:</strong><br>
@@ -1022,13 +1039,16 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
   Endvalidierung durch zugelassenen Wirtschaftsprüfer (WP/vBP).
 </div>
 </div>
+</div>
 
 <div class="sec">
 <h2>5 · Compliance-Checkliste &amp; Handlungsempfehlungen</h2>
+<div class="tbl-wrap">
 <table>
   <thead><tr><th style="width:58%">Norm / Vorschrift</th><th>Status &amp; Empfehlung</th></tr></thead>
   <tbody>{comp_rows}</tbody>
 </table>
+</div>
 {ns_block}
 <p class="src" style="margin-top:8px">Alle Angaben basieren auf Richtwerten. Verbindliche Compliance-Bestätigung durch Steuer- oder Energieberater erforderlich.</p>
 </div>
@@ -1040,8 +1060,10 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
 
 <div class="sec">
 <h2>7 · Rapport-Metadata &amp; Integrität</h2>
+<div class="tbl-wrap">
 <table>
-  <tr><th>Parameter</th><th>Wert</th></tr>
+  <thead><tr><th>Parameter</th><th>Wert</th></tr></thead>
+  <tbody>
   <tr><td>Prüfnummer</td><td><strong>{esc(pruf_nr)}</strong></td></tr>
   <tr><td>Erstellt (Europe/Berlin)</td><td>{ts_display}</td></tr>
   <tr><td>Berichtsjahr</td><td>{data['berichtsjahr']}</td></tr>
@@ -1055,7 +1077,9 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
   <tr><td>Datenalter SMARD</td><td>{data_age}</td></tr>
   <tr><td>CO₂-Faktor-Quelle</td><td>{esc(esg['quelle'])}</td></tr>
   <tr><td>Netzentgelt-Quelle</td><td>BNetzA / ÜNB Oktober 2025 (amtlich)</td></tr>
+  </tbody>
 </table>
+</div>
 <h3>🔐 Rapport-Hash (Manipulationsschutz / SHA-256)</h3>
 <p style="font-size:12px;margin-bottom:6px">
   Der folgende Hash wurde aus den Kerndaten dieses Berichts (PLZ, Verbrauch, Spitzenlast,
