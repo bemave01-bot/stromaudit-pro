@@ -122,7 +122,7 @@ def de_num(value: float, decimals: int = 2) -> str:
 
 def de_eur(v: float) -> str: return de_num(v, 2)
 def de_kwh(v: float) -> str: return de_num(v, 0)
-def de_ct(v: float, d: int = 3) -> str: return de_num(v, d)
+def de_ct(v: float, d: int = 4) -> str: return de_num(v, d)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -498,7 +498,7 @@ def berechne_stromkosten(data: dict, marktpreis_eur_kwh: float, netz_info: dict)
 def berechne_esg(kwh: float) -> dict:
     co2_kg    = round(kwh * CONFIG["co2_faktor_g_kwh"] / 1000, 1)
     co2_t     = round(co2_kg / 1000, 3)
-    intensity = round(CONFIG["co2_faktor_g_kwh"] / 1000, 4)
+    intensity = round(CONFIG["co2_faktor_g_kwh"] / 1000, 3)
     return {
         "scope":                     "Scope 2 – Location-based (GHG Protocol Corporate Standard)",
         "norm":                      "ESRS E1 / ISO 14064-1 / GHG Protocol",
@@ -765,6 +765,12 @@ def generiere_html(
           ca. {de_num(kwh/kw if kw > 0 else 0, 0)} Volllaststunden – eine Prüfung durch den
           Netzbetreiber ist daher zwingend erforderlich, bevor ein Antrag gestellt wird.<br>
           <small>Antrag beim Netzbetreiber: Einsparungspotenzial nur bei nachgewiesener Voraussetzungserfüllung.</small>
+        </div>
+        <div class="box red" style="font-size:12px">
+          <strong>⚠️ Benutzungsdauer &lt; 7.000 h → nur atypische Netznutzung möglich</strong><br>
+          §19 Abs.2 Satz 1 StromNEV greift erst ab ≥ 7.000 Volllaststunden.
+          Bei ca. {de_num(kwh/kw if kw > 0 else 0, 0)} h ist §19 Abs.2 Satz 2 (atypische Netznutzung) der einzige
+          mögliche Antragsweg – vorherige Abstimmung mit dem Netzbetreiber zwingend erforderlich.
         </div>"""
 
     spitzenlast_hinweis = f"""
@@ -946,7 +952,7 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
   <div class="kpi"><div class="lbl">Netto-Jahreskosten</div>
     <div class="val">{de_kwh(kalk['netto_gesamt_eur'])} €</div><div class="sub">excl. MwSt.</div></div>
   <div class="kpi"><div class="lbl">Arbeitspreis (netto)</div>
-    <div class="val">{de_ct(kalk['arbeitspreis_netto_eur_kwh']*100)} ct</div><div class="sub">pro kWh</div></div>
+    <div class="val">{de_ct(kalk['arbeitspreis_netto_eur_kwh']*100)} ct/kWh</div><div class="sub">inkl. Netzentgelte, Umlagen, Stromsteuer, Beschaffung</div></div>
   <div class="kpi"><div class="lbl">Leistungskosten</div>
     <div class="val">{de_kwh(kalk['leistungskosten_netto_eur'])} €</div>
     <div class="sub">{de_num(kw,1)} kW × {t['leistungspreis_eur_kw']:.0f} €/kW</div></div>
@@ -1013,12 +1019,12 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
 <div class="tbl-wrap">
 <div class="kpi-grid">
   <div class="kpi grn"><div class="lbl">CO₂-Fußabdruck (Scope 2, location-based)</div>
-    <div class="val">{de_num(esg['co2_footprint_tonnen'],3)} t CO₂e</div>
+    <div class="val">{de_num(esg['co2_footprint_tonnen'],2)} t CO₂e</div>
     <div class="sub">{de_kwh(esg['co2_footprint_kg'])} kg</div></div>
   <div class="kpi"><div class="lbl">Emissionsfaktor (UBA 2025)</div>
     <div class="val">{de_num(esg['emissionsfaktor_g_co2_kwh'],0)} g</div><div class="sub">CO₂e/kWh</div></div>
   <div class="kpi"><div class="lbl">Intensitätsrate</div>
-    <div class="val">{de_num(esg['intensitaetsrate_t_co2_mwh'],4)}</div><div class="sub">t CO₂e/MWh</div></div>
+    <div class="val">{de_num(esg['intensitaetsrate_t_co2_mwh'],3)}</div><div class="sub">t CO₂e/MWh</div></div>
 </div>
 <table>
   <thead><tr><th>Parameter</th><th>Wert</th></tr></thead>
@@ -1026,7 +1032,7 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
   <tr><td>Scope &amp; Methodik</td><td>{esc(esg['scope'])}</td></tr>
   <tr><td>Norm</td><td>{esc(esg['norm'])}</td></tr>
   <tr><td>Emissionsfaktor</td><td>{de_num(esg['emissionsfaktor_g_co2_kwh'],0)} g CO₂e/kWh – {esc(esg['quelle'])}</td></tr>
-  <tr><td>CO₂-Emissionen (Scope 2, location-based)</td><td><strong>{de_kwh(esg['co2_footprint_kg'])} kg ({de_num(esg['co2_footprint_tonnen'],3)} t CO₂e)</strong></td></tr>
+  <tr><td>CO₂-Emissionen (Scope 2, location-based)</td><td><strong>{de_kwh(esg['co2_footprint_kg'])} kg ({de_num(esg['co2_footprint_tonnen'],2)} t CO₂e)</strong></td></tr>
   <tr><td>EU-Taxonomie-Relevanz</td><td>{esc(esg['eu_taxonomy'])}</td></tr>
   <tr><td>CSRD/ESRS-Datenpunkte</td><td>{esc(esrs_pts)}</td></tr>
   </tbody>
@@ -1034,8 +1040,8 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
 <div class="box yellow" style="margin-top:12px">
   <strong>Hinweis für CSRD/ESRS E1-Berichterstattung:</strong><br>
   Dieser Scope-2-Wert ist location-based (Strommix Deutschland 2025).
-  Für vollständige CSRD-Konformität ist zusätzlich ein marktbasierter Wert
-  (Herkunftsnachweise / Guarantees of Origin) zu ermitteln.
+  Marktbasierter Scope-2-Wert (Herkunftsnachweise / Guarantees of Origin) nicht im Lieferumfang enthalten –
+  für vollständige CSRD-Konformität zusätzlich zu ermitteln.
   Endvalidierung durch zugelassenen Wirtschaftsprüfer (WP/vBP).
 </div>
 </div>
