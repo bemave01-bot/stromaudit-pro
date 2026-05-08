@@ -726,7 +726,7 @@ def generiere_html(
     ns_block = ""
     if ns_rows:
         ns_block = f"""
-        <h3>📅 Empfohlene nächste Schritte</h3>
+        <h3>Empfohlene nächste Schritte</h3>
         <table><thead><tr><th>Maßnahme</th><th>Empfohlene Frist</th></tr></thead>
         <tbody>{ns_rows}</tbody></table>"""
 
