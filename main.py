@@ -11,6 +11,11 @@ Verbeteringen v3.1:
   - Configureerbare tarieven (CONFIG-dict)
   - Uitgebreide rapport-metadata (runtime, bronnen, versie)
 
+Verbeteringen v3.4:
+  - Punt 4: Klikbare HZA-link (zoll.de) in §9b groene box én compliance-checklist
+  - Punt 5: Urgentie-trigger ipv vaste datum – "Marktpreise ändern sich täglich"
+  - Punt 8: Persoonlijke intro-blok met bedrijfsnaam, PLZ, Bundesland en berichtsjaar
+
 Verbeteringen v3.3:
   - Benchmarking: Arbeitspreis vs. Bundesdurchschnitt vergleichbarer Betriebe (BDEW 2025)
   - Einsparpotenzial-Banner prominent bovenaan het rapport (direct zichtbaar)
@@ -49,7 +54,7 @@ from apify import Actor
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIGURATIE (alle tarieven en parameters op één plek)
 # ─────────────────────────────────────────────────────────────────────────────
-REPORT_VERSION = "3.3"
+REPORT_VERSION = "3.4"
 TZ_BERLIN      = ZoneInfo("Europe/Berlin")
 
 # SMARD
@@ -766,7 +771,18 @@ def generiere_html(
     </div>"""
     comp_rows = ""
     for c in comp["checks"]:
-        emp       = f"<br><em style='font-size:11px'>{esc(c['empfehlung'])}</em>" if c["empfehlung"] else ""
+        # §9b: injecteer klikbare HZA-link als empfehlung
+        if c["norm"] == "§9b StromStG" and c["relevant"]:
+            emp = (
+                "<br><em style='font-size:11px'>"
+                + esc(c["empfehlung"])
+                + " – <a href='https://www.zoll.de/DE/Fachthemen/Steuern/Verbrauchsteuern/"
+                "Energieerzeugnisse-Strom/Entlastungen/Strom/strom_node.html' "
+                "target='_blank' rel='noopener' style='color:#1a4a7a;font-weight:700'>"
+                "Zum Antragsformular HZA →</a></em>"
+            )
+        else:
+            emp = f"<br><em style='font-size:11px'>{esc(c['empfehlung'])}</em>" if c["empfehlung"] else ""
         comp_rows += f"<tr><td><strong>{esc(c['norm'])}</strong> – {esc(c['titel'])}</td><td>{esc(c['status'])}{emp}</td></tr>"
 
     ns_rows = ""
@@ -787,7 +803,12 @@ def generiere_html(
           <strong>§9b StromStG – Vergünstigung Produzierendes Gewerbe</strong><br>
           Angewendeter Steuersatz: <strong>0,0500 ct/kWh</strong> (statt 2,0500 ct/kWh Regelsatz)<br>
           Steuerliche Entlastung: <strong>{de_eur(kalk['stromsteuer_entlastung_9b_eur'])} €/Jahr</strong><br>
-          <small>Jahresausgleich beim zuständigen Hauptzollamt beantragen (§9b Abs.2a StromStG). Frist: 31. Dezember des laufenden Jahres.</small>
+          <small>Jahresausgleich beim zuständigen Hauptzollamt beantragen (§9b Abs.2a StromStG). Frist: 31. Dezember des laufenden Jahres.</small><br>
+          <a href="https://www.zoll.de/DE/Fachthemen/Steuern/Verbrauchsteuern/Energieerzeugnisse-Strom/Entlastungen/Strom/strom_node.html"
+             target="_blank" rel="noopener"
+             style="display:inline-block;margin-top:7px;color:#1a7a3c;font-weight:700;font-size:12px;text-decoration:underline">
+            ✅ Jahresausgleich beantragen: Zum Antragsformular HZA (zoll.de) →
+          </a>
         </div>"""
 
     blok_19 = ""
@@ -928,6 +949,7 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
 .savings-5y-sub{{font-size:10px;opacity:.65}}
 .savings-bench{{font-size:11.5px;opacity:.85;border-top:1px solid rgba(255,255,255,.2);padding-top:10px}}
 .savings-bench strong{{color:#fff}}
+.intro-block{{background:#f7f9ff;border-left:4px solid #1a4a7a;padding:14px 48px;font-size:13px;line-height:1.7;color:#1a1a1a}}
 .ftr{{background:#0a2540;color:rgba(255,255,255,.65);padding:20px 48px;font-size:10.5px;line-height:1.8}}
 .ftr strong{{color:#fff}}
 .src{{font-size:10px;color:#999;margin-top:5px;font-style:italic}}
@@ -1007,6 +1029,15 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
   <div class="savings-bench">
     Ihr Arbeitspreis: <strong>{de_ct(arbeitspreis_ct)} ct/kWh</strong> &nbsp;·&nbsp; {bench_html}
   </div>
+</div>
+
+<div class="intro-block">
+  <strong>Sehr geehrte Damen und Herren von {esc(data['unternehmen'])},</strong><br>
+  auf Basis Ihrer Angaben für den Standort <strong>{esc(data['plz'])} · {esc(netz.get('bundesland','—'))}</strong>
+  haben wir folgende Ergebnisse und Optimierungspotenziale für das Berichtsjahr
+  <strong>{data['berichtsjahr']}</strong> ermittelt.
+  Der Bericht basiert auf einem Jahresverbrauch von <strong>{de_kwh(kwh)} kWh</strong>
+  und einer Spitzenlast von <strong>{de_num(kw,1)} kW</strong>.
 </div>
 
 {"<div class='sec'>" + warn_html + fallback_html + cached_html + "</div>" if (warn_html or fallback_html or cached_html) else ""}
@@ -1148,6 +1179,13 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
 </div>
 {ns_block}
 <p class="src" style="margin-top:8px">Alle Angaben basieren auf Richtwerten. Verbindliche Compliance-Bestätigung durch Steuer- oder Energieberater erforderlich.</p>
+<div class="box yellow" style="margin-top:10px;font-size:12px">
+  <strong>⏱️ Aktualität dieses Berichts:</strong>
+  Marktpreise ändern sich täglich – dieser Bericht spiegelt den Stand vom {ts_display} wider.
+  Eine erneute Prüfung wird empfohlen, sobald sich Ihr <strong>Verbrauch</strong>,
+  Ihre <strong>Spitzenlast</strong> oder der <strong>Marktpreis</strong> wesentlich ändert.
+  Erstellen Sie jederzeit einen aktualisierten Bericht mit denselben Eingabeparametern.
+</div>
 </div>
 
 <div class="sec">
