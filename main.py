@@ -575,10 +575,10 @@ def pruefe_compliance(kwh: float, kw: float, prod: bool) -> dict:
             if stromnev_basis and stromnev_vls else
             "Netzbetreiber kontaktieren zur Prüfung atypischer Netznutzung (§19 Abs.2 Satz 2 StromNEV) – kein Standardantrag möglich bei < 7.000 Volllaststunden"
             if stromnev_basis and not stromnev_vls else None
-         ),   
-      })     
-      if stromnev_basis and stromnev_vls:
-        next_steps.append({"aktion": "Antrag individuelle Netzentgelte beim Netzbetreiber einreichen", "frist": "Nächstes Quartal"})
+        ),   
+    })     
+    if stromnev_basis and stromnev_vls:
+       next_steps.append({"aktion": "Antrag individuelle Netzentgelte beim Netzbetreiber einreichen", "frist": "Nächstes Quartal"})
 
     csrd = kwh > 500_000
     checks.append({
