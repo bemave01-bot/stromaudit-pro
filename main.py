@@ -570,9 +570,14 @@ def pruefe_compliance(kwh: float, kw: float, prod: bool) -> dict:
         "titel":      "Individuelle Netzentgelte (ab 30 kW + 30.000 kWh + ≥7.000 Volllaststunden)",
         "relevant":   stromnev_basis,
         "status":     stromnev_status,
-        "empfehlung": "Antrag auf individuelle Netzentgelte beim Netzbetreiber stellen – nur nach Prüfung der Benutzungsdauer" if stromnev_basis else None,
-    })
-    if stromnev_basis and stromnev_vls:
+        "empfehlung": (
+            "Antrag auf individuelle Netzentgelte beim Netzbetreiber stellen (§19 Abs.2 Satz 1 StromNEV)"
+            if stromnev_basis and stromnev_vls else
+            "Netzbetreiber kontaktieren zur Prüfung atypischer Netznutzung (§19 Abs.2 Satz 2 StromNEV) – kein Standardantrag möglich bei < 7.000 Volllaststunden"
+            if stromnev_basis and not stromnev_vls else None
+         ),   
+      })     
+      if stromnev_basis and stromnev_vls:
         next_steps.append({"aktion": "Antrag individuelle Netzentgelte beim Netzbetreiber einreichen", "frist": "Nächstes Quartal"})
 
     csrd = kwh > 500_000
