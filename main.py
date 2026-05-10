@@ -11,6 +11,13 @@ Verbeteringen v3.1:
   - Configureerbare tarieven (CONFIG-dict)
   - Uitgebreide rapport-metadata (runtime, bronnen, versie)
 
+Verbeteringen v3.5:
+  - Punt 1: §9b blok vermeldt expliciet Zoll-Formular 1450
+  - Punt 2: CO₂-beprijzing BEHG (€55/t 2026) berekend en getoond in ESG-sectie
+  - Punt 3: Day-Ahead veilingtijden (00:00–23:59 uur) in header én voetnoot
+  - Punt 4: Term "Hochlastzeitfenster" toegevoegd aan §19 StromNEV-advies
+  - Punt 5: Prüfnummer + SHA-256 hash visueel prominent als kader met stempel-icoon
+
 Verbeteringen v3.4:
   - Punt 4: Klikbare HZA-link (zoll.de) in §9b groene box én compliance-checklist
   - Punt 5: Urgentie-trigger ipv vaste datum – "Marktpreise ändern sich täglich"
@@ -54,7 +61,7 @@ from apify import Actor
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIGURATIE (alle tarieven en parameters op één plek)
 # ─────────────────────────────────────────────────────────────────────────────
-REPORT_VERSION = "3.4"
+REPORT_VERSION = "3.5"
 TZ_BERLIN      = ZoneInfo("Europe/Berlin")
 
 # SMARD
@@ -93,6 +100,8 @@ CONFIG = {
     "beschaffungs_marge":    0.10,
     # CO₂-factor (UBA/IFEU Strommix DE 2025)
     "co2_faktor_g_kwh":      367.0,
+    # CO₂-Preis BEHG 2026 (Brennstoffemissionshandelsgesetz)
+    "behg_co2_preis_eur_t":  55.0,
     # Fallback-marktprijs als SMARD niet bereikbaar is
     "fallback_marktpreis_eur_mwh": 89.30,
     # Validatiegrenzen
@@ -131,6 +140,7 @@ GESETZ_REFS = [
     "§8 EDL-G (Energiedienstleistungsgesetz)",
     "EU Taxonomy Regulation 2020/852 Art.8",
     "IFEU/UBA Emissionsfaktoren Strommix Deutschland 2025",
+    "BEHG (Brennstoffemissionshandelsgesetz) – CO₂-Preis 2026",
 ]
 
 
@@ -521,6 +531,8 @@ def berechne_esg(kwh: float) -> dict:
     co2_kg    = round(kwh * CONFIG["co2_faktor_g_kwh"] / 1000, 1)
     co2_t     = round(co2_kg / 1000, 3)
     intensity = round(CONFIG["co2_faktor_g_kwh"] / 1000, 3)
+    behg_preis_eur_t = CONFIG["behg_co2_preis_eur_t"]
+    behg_kosten_eur  = round(co2_t * behg_preis_eur_t, 2)
     return {
         "scope":                     "Scope 2 – Location-based (GHG Protocol Corporate Standard)",
         "norm":                      "ESRS E1 / ISO 14064-1 / GHG Protocol",
@@ -536,6 +548,8 @@ def berechne_esg(kwh: float) -> dict:
             "E1-6 (Intensitätsrate)",
         ],
         "eu_taxonomy": "Zu prüfen (Art. 8 EU-Taxonomie-VO 2020/852)",
+        "behg_co2_preis_eur_t":    behg_preis_eur_t,
+        "behg_co2_kosten_eur":     behg_kosten_eur,
     }
 
 
@@ -803,7 +817,8 @@ def generiere_html(
           <strong>§9b StromStG – Vergünstigung Produzierendes Gewerbe</strong><br>
           Angewendeter Steuersatz: <strong>0,0500 ct/kWh</strong> (statt 2,0500 ct/kWh Regelsatz)<br>
           Steuerliche Entlastung: <strong>{de_eur(kalk['stromsteuer_entlastung_9b_eur'])} €/Jahr</strong><br>
-          <small>Jahresausgleich beim zuständigen Hauptzollamt beantragen (§9b Abs.2a StromStG). Frist: 31. Dezember des laufenden Jahres.</small><br>
+          <small>Jahresausgleich beim zuständigen Hauptzollamt beantragen (§9b Abs.2a StromStG). Frist: 31. Dezember des laufenden Jahres.<br>
+          📋 <strong>Einzureichendes Formular: Zoll-Formular 1450</strong> (Antrag auf Erlass/Erstattung/Vergütung der Energiesteuer / Stromsteuer für Unternehmen des Produzierenden Gewerbes).</small><br>
           <a href="https://www.zoll.de/DE/Fachthemen/Steuern/Verbrauchsteuern/Energieerzeugnisse-Strom/Entlastungen/Strom/strom_node.html"
              target="_blank" rel="noopener"
              style="display:inline-block;margin-top:7px;color:#1a7a3c;font-weight:700;font-size:12px;text-decoration:underline">
@@ -827,7 +842,10 @@ def generiere_html(
           Bei {de_kwh(kwh)} kWh / {de_num(kw,1)} kW ergibt sich eine rechnerische Benutzungsdauer von
           ca. {de_num(kwh/kw if kw > 0 else 0, 0)} Volllaststunden – eine Prüfung durch den
           Netzbetreiber ist daher zwingend erforderlich, bevor ein Antrag gestellt wird.<br>
-          <small>Antrag beim Netzbetreiber: Einsparungspotenzial nur bei nachgewiesener Voraussetzungserfüllung.</small>
+          <small>Antrag beim Netzbetreiber: Einsparungspotenzial nur bei nachgewiesener Voraussetzungserfüllung.</small><br>
+          <small>💡 <strong>Tipp:</strong> Da die Benutzungsdauer unter 7.000 h liegt, ist der Weg über <strong>atypische Netznutzung (§19 Abs.2 Satz 2 StromNEV)</strong> die einzige Option.
+          Fragen Sie Ihren Netzbetreiber nach den <strong>Hochlastzeitfenstern</strong> (HLZ) des lokalen Netzes –
+          nur wer nachweislich außerhalb dieser Fenster verbraucht, kann individuelle Netzentgelte beantragen.</small>
         </div>
         <div class="box red" style="font-size:12px">
           <strong>⚠️ Benutzungsdauer &lt; 7.000 h → nur atypische Netznutzung möglich</strong><br>
@@ -995,7 +1013,7 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
     <div><span>Netzbetreiber</span><strong>{esc(netz['operator'])}</strong></div>
     <div><span>Marktpreis (SMARD)</span><strong>{de_num(markt['raw_eur_mwh'],2)} EUR/MWh</strong></div>
     <div><span>7-Tage-Ø</span><strong>{de_num(markt['avg_7d_eur_kwh']*1000,2)} EUR/MWh</strong></div>
-    <div><span>Datenstand</span><strong>{esc(markt['timestamp_berlin'])}</strong></div>
+    <div><span>Marktpreis gültig für</span><strong>{esc(markt['timestamp_berlin'].split(' ')[0])} (00:00 – 23:59 Uhr)</strong></div>
   </div>
 </div>
 
@@ -1128,6 +1146,7 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
 </table>
 <p class="src">Umlagen-Quelle: Übertragungsnetzbetreiber (ÜNB) – amtliche Veröffentlichung Oktober 2025.
 Netzentgelte: Bundesnetzagentur (BNetzA) / regionaler Netzbetreiber. Marktpreis: SMARD Bundesnetzagentur.<br>
+<strong>Hinweis Day-Ahead-Preis:</strong> Der angezeigte Marktpreis ist der gewichtete Durchschnitt der EPEX Spot Day-Ahead-Auktion und gilt für die gesamte Kalenderdag ({esc(markt['timestamp_berlin'].split(' ')[0])}, 00:00 – 23:59 Uhr).<br>
 <strong>Hinweis Leistungspreis:</strong> Der verwendete Leistungspreis von {de_eur(CONFIG['leistungspreis_eur_kw'])} €/kW/Jahr ist ein
 Schätzwert (regionaler Durchschnitt). Der tatsächliche Leistungspreis ist dem Netzentgelttarif des
 zuständigen Netzbetreibers zu entnehmen (§21 EnWG / BNetzA-Veröffentlichung).<br>
@@ -1159,6 +1178,17 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
   <tr><td>CSRD/ESRS-Datenpunkte</td><td>{esc(esrs_pts)}</td></tr>
   </tbody>
 </table>
+<div class="box blue" style="margin-top:12px">
+  <strong>💶 CO₂-Beprijzing (BEHG 2026)</strong><br>
+  Auf Basis des deutschen CO₂-Preises gemäß <strong>Brennstoffemissionshandelsgesetz (BEHG)</strong>
+  von <strong>{de_eur(CONFIG['behg_co2_preis_eur_t'])} €/t</strong> (Tarif 2026) ergibt sich für Ihren
+  Scope-2-Fußabdruck von <strong>{de_num(esg['co2_footprint_tonnen'],2)} t CO₂e</strong>
+  eine implizite CO₂-Kostenbelastung von
+  <strong style="font-size:13px;color:#1a4a7a">{de_eur(esg['behg_co2_kosten_eur'])} €/Jahr</strong>.<br>
+  <small>Hinweis: Der BEHG-CO₂-Preis betrifft primär Brennstoffe (Wärme/Verkehr). Strom wird über ETS1 bepreist.
+  Diese Berechnung zeigt die vollständige CO₂-Kostenrelevanz Ihres Energieprofils für ESG-/CSRD-Reporting.
+  Quelle: §10 BEHG – Festpreisphase 2026.</small>
+</div>
 <div class="box yellow" style="margin-top:12px">
   <strong>Hinweis für CSRD/ESRS E1-Berichterstattung:</strong><br>
   Dieser Scope-2-Wert ist location-based (Strommix Deutschland 2025).
@@ -1221,7 +1251,15 @@ ist eine Schätzung. Der tatsächliche Lieferantenpreis ergibt sich aus dem indi
   Gesamtkosten, CO₂-Wert, Prüfnummer) berechnet. Jede Änderung der Berechnungsdaten
   erzeugt einen anderen Hash – dies dient als Manipulationsschutz für Audit-Zwecke.
 </p>
-<div class="hash-box">SHA-256: {rapport_hash}</div>
+<div style="border:2px solid #0a2540;border-radius:8px;padding:16px 20px;background:#f0f4ff;margin:12px 0;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="font-size:36px;line-height:1">🔏</div>
+  <div style="flex:1;min-width:180px">
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#555;margin-bottom:3px">Prüfnummer (Audit-ID)</div>
+    <div style="font-size:16px;font-weight:800;color:#0a2540;letter-spacing:.04em">{esc(pruf_nr)}</div>
+    <div style="font-size:10px;color:#777;margin-top:6px;text-transform:uppercase;letter-spacing:.04em">SHA-256 Integritäts-Hash</div>
+    <div style="font-family:monospace;font-size:10px;background:#fff;border:1px solid #c5d5f0;border-radius:4px;padding:6px 10px;word-break:break-all;color:#333;margin-top:3px">{rapport_hash}</div>
+  </div>
+</div>
 </div>
 
 <div class="sec">
