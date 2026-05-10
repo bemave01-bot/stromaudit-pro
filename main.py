@@ -743,7 +743,7 @@ def generiere_html(
         blok_9b = f"""
         <div class="box green">
           <strong>§9b StromStG – Vergünstigung Produzierendes Gewerbe</strong><br>
-          Angewendeter Steuersatz: <strong>0,05 ct/kWh</strong> (statt 2,05 ct/kWh Regelsatz)<br>
+          Angewendeter Steuersatz: <strong>0,0500 ct/kWh</strong> (statt 2,0500 ct/kWh Regelsatz)<br>
           Steuerliche Entlastung: <strong>{de_eur(kalk['stromsteuer_entlastung_9b_eur'])} €/Jahr</strong><br>
           <small>Jahresausgleich beim zuständigen Hauptzollamt beantragen (§9b Abs.2a StromStG). Frist: 31. Dezember des laufenden Jahres.</small>
         </div>"""
