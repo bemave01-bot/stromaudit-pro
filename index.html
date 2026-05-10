@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>StromAudit Pro – Ihr persönlicher Energiebericht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #0a2540;
+  --blue:   #1a4a7a;
+  --sky:    #7ecef4;
+  --green:  #1a7a3c;
+  --mint:   #7eeaa0;
+  --gold:   #f0a500;
+  --red:    #c0392b;
+  --bg:     #f0f2f7;
+  --white:  #ffffff;
+  --border: #dde3f0;
+  --text:   #1a1a1a;
+  --muted:  #6b7280;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff;
+  padding: 36px 24px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(126,206,244,.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.header-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  color: var(--sky);
+}
+.header h1 {
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin-bottom: 8px;
+}
+.header h1 span { color: var(--sky); }
+.header p {
+  font-size: 14px;
+  opacity: .75;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.logo-mark {
+  font-size: 38px;
+  margin-bottom: 10px;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(126,206,244,.4));
+}
+
+/* ── Trust bar ── */
+.trust-bar {
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding: 10px 24px;
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+.trust-item {
+  color: rgba(255,255,255,.6);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.trust-item strong { color: rgba(255,255,255,.9); }
+
+/* ── Main container ── */
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 32px 16px 60px;
+}
+
+/* ── Steps indicator ── */
+.steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 28px;
+}
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.step.active { color: var(--navy); }
+.step.done { color: var(--green); }
+.step-dot {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.step.active .step-dot { background: var(--navy); color: #fff; }
+.step.done .step-dot { background: var(--green); color: #fff; }
+.step-line {
+  width: 40px; height: 2px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 2px 20px rgba(10,37,64,.08), 0 0 0 1px var(--border);
+  overflow: hidden;
+}
+.card-header {
+  background: linear-gradient(135deg, #f7f9ff 0%, #eef2fb 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.card-header-icon {
+  width: 42px; height: 42px;
+  background: var(--navy);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.card-header h2 { font-size: 15px; font-weight: 700; color: var(--navy); }
+.card-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.card-body { padding: 28px; }
+
+/* ── Form ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+
+label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: .02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+label .req { color: var(--red); font-size: 10px; }
+label .tip {
+  background: var(--border);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+select {
+  height: 44px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 0 13px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: #fff;
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+  width: 100%;
+}
+input:focus, select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(26,74,122,.1);
+}
+input.error { border-color: var(--red); }
+.field-hint {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.field-error {
+  font-size: 11px;
+  color: var(--red);
+  display: none;
+}
+.field-error.show { display: block; }
+
+/* ── Toggle ── */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: #f7f9ff;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color .15s;
+}
+.toggle-row:hover { border-color: var(--blue); }
+.toggle-row.active { border-color: var(--green); background: #f0faf4; }
+.toggle-label { font-size: 13px; font-weight: 500; }
+.toggle-label small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.toggle-switch {
+  width: 44px; height: 24px;
+  background: var(--border);
+  border-radius: 12px;
+  position: relative;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+  transition: transform .2s;
+}
+.toggle-row.active .toggle-switch { background: var(--green); }
+.toggle-row.active .toggle-switch::after { transform: translateX(20px); }
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+
+/* ── Info box ── */
+.info-box {
+  background: #e3f0ff;
+  border-left: 3px solid var(--blue);
+  border-radius: 0 6px 6px 0;
+  padding: 12px 15px;
+  font-size: 12px;
+  color: var(--navy);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.info-box strong { display: block; margin-bottom: 3px; }
+
+/* ── Submit button ── */
+.btn-submit {
+  width: 100%;
+  height: 52px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: opacity .15s, transform .1s;
+  letter-spacing: .01em;
+  margin-top: 24px;
+}
+.btn-submit:hover { opacity: .92; transform: translateY(-1px); }
+.btn-submit:active { transform: translateY(0); }
+.btn-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* ── Loading state ── */
+.loading-card {
+  display: none;
+  text-align: center;
+  padding: 48px 28px;
+}
+.loading-card.show { display: block; }
+.spinner {
+  width: 52px; height: 52px;
+  border: 4px solid var(--border);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-card h3 { font-size: 16px; color: var(--navy); margin-bottom: 8px; }
+.loading-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.loading-steps {
+  margin-top: 20px;
+  text-align: left;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.loading-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 5px 0;
+}
+.loading-step.done { color: var(--green); }
+.loading-step.active { color: var(--navy); font-weight: 600; }
+.ls-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.loading-step.done .ls-dot { background: var(--green); }
+.loading-step.active .ls-dot { background: var(--navy); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ── Result card ── */
+.result-card {
+  display: none;
+  text-align: center;
+  padding: 40px 28px;
+}
+.result-card.show { display: block; }
+.result-icon { font-size: 52px; margin-bottom: 16px; }
+.result-card h3 { font-size: 18px; color: var(--navy); margin-bottom: 8px; }
+.result-card p { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+.btn-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--green) 0%, #1a9c4a 100%);
+  color: #fff;
+  padding: 14px 32px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity .15s, transform .1s;
+}
+.btn-download:hover { opacity: .9; transform: translateY(-1px); }
+.result-meta {
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  background: #f7f9ff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  text-align: left;
+}
+
+/* ── Error card ── */
+.error-card {
+  display: none;
+  padding: 32px 28px;
+  text-align: center;
+}
+.error-card.show { display: block; }
+.error-card h3 { color: var(--red); font-size: 16px; margin: 12px 0 8px; }
+.error-card p { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.btn-retry {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: 11px 28px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.footer a { color: var(--blue); text-decoration: none; }
+
+/* ── Disclaimer ── */
+.disclaimer {
+  background: #fffbe6;
+  border: 1px solid #f0a500;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 11px;
+  color: #6b4c00;
+  line-height: 1.6;
+  margin-top: 16px;
+}
+
+@media (max-width: 520px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: 1; }
+  .card-body { padding: 20px 16px; }
+  .trust-bar { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <span class="logo-mark">⚡</span>
+  <div class="header-badge">Deutsche Energie-Compliance · ESG Pre-Audit</div>
+  <h1>Ihr persönlicher <span>Energiebericht</span></h1>
+  <p>Füllen Sie das Formular aus – Ihr individueller StromAudit Pro Bericht wird in Sekunden erstellt.</p>
+</div>
+
+<div class="trust-bar">
+  <div class="trust-item">✅ <strong>SMARD Live-Daten</strong> (Bundesnetzagentur)</div>
+  <div class="trust-item">🔐 <strong>SHA-256</strong> Manipulationsschutz</div>
+  <div class="trust-item">📋 <strong>ESRS E1</strong> ESG-konform</div>
+  <div class="trust-item">🇩🇪 <strong>DSGVO-konform</strong></div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="container">
+
+  <div class="steps">
+    <div class="step done" id="step1">
+      <div class="step-dot">✓</div>
+      <span>Zahlung</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step active" id="step2">
+      <div class="step-dot">2</div>
+      <span>Daten eingeben</span>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" id="step3">
+      <div class="step-dot">3</div>
+      <span>Bericht erhalten</span>
+    </div>
+  </div>
+
+  <div class="card">
+
+    <!-- FORM VIEW -->
+    <div id="form-view">
+      <div class="card-header">
+        <div class="card-header-icon">📊</div>
+        <div>
+          <h2>Betriebsdaten eingeben</h2>
+          <p>Alle Felder mit * sind Pflichtfelder · Berechnung dauert ca. 10–30 Sekunden</p>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div class="info-box">
+          <strong>ℹ️ Wo finde ich diese Daten?</strong>
+          Jahresverbrauch und Spitzenlast finden Sie auf Ihrer Stromrechnung oder im Online-Portal Ihres Stromanbieters. Die PLZ ist Ihr Unternehmensstandort.
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="unternehmen">Unternehmensname</label>
+            <input type="text" id="unternehmen" placeholder="z.B. Mustermann GmbH" maxlength="100">
+          </div>
+
+          <div class="form-group">
+            <label for="plz">Postleitzahl <span class="req">*</span></label>
+            <input type="text" id="plz" placeholder="z.B. 80331" maxlength="5" pattern="\d{5}">
+            <span class="field-error" id="err-plz">Bitte eine gültige 5-stellige PLZ eingeben.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="anschrift">Straße &amp; Hausnummer</label>
+            <input type="text" id="anschrift" placeholder="z.B. Hauptstraße 12" maxlength="150">
+          </div>
+
+          <div class="form-group">
+            <label for="projekt_referenz">Referenznummer <span class="tip">optional</span></label>
+            <input type="text" id="projekt_referenz" placeholder="z.B. Ihre Bestellnummer" maxlength="60">
+          </div>
+
+          <div class="form-group">
+            <label for="jahresverbrauch_kwh">Jahresverbrauch (kWh) <span class="req">*</span></label>
+            <input type="number" id="jahresverbrauch_kwh" placeholder="z.B. 80000" min="1000" max="100000000" step="1">
+            <span class="field-hint">Gesamtverbrauch pro Jahr laut Stromrechnung</span>
+            <span class="field-error" id="err-kwh">Bitte einen realistischen Jahresverbrauch eingeben (min. 1.000 kWh).</span>
+          </div>
+
+          <div class="form-group">
+            <label for="spitzenlast_kw">Spitzenlast (kW) <span class="req">*</span></label>
+            <input type="number" id="spitzenlast_kw" placeholder="z.B. 40" min="0" max="100000" step="0.1">
+            <span class="field-hint">Maximale Leistungsabnahme im Jahresverlauf</span>
+            <span class="field-error" id="err-kw">Bitte eine gültige Spitzenlast eingeben.</span>
+          </div>
+
+          <div class="form-group">
+            <label for="messstellenbetrieb_eur">Messstellenbetrieb (€/Jahr) <span class="tip">optional</span></label>
+            <input type="number" id="messstellenbetrieb_eur" placeholder="250" min="0" max="50000" step="1" value="250">
+            <span class="field-hint">Standardwert: 250 €/Jahr (§20 MsbG)</span>
+          </div>
+
+          <div class="form-group">
+            <label for="berichtsjahr">Berichtsjahr</label>
+            <select id="berichtsjahr">
+              <option value="2026" selected>2026</option>
+              <option value="2025">2025</option>
+              <option value="2027">2027</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label>Produzierendes Gewerbe (§9b StromStG)</label>
+            <div class="toggle-row" id="toggle-prod" onclick="toggleProd()">
+              <div class="toggle-label">
+                Unternehmen des Produzierenden Gewerbes
+                <small>Aktivieren für §9b Stromsteuervergünstigung (Zoll-Formular 1450)</small>
+              </div>
+              <div class="toggle-switch"></div>
+            </div>
+            <input type="hidden" id="is_producing" value="false">
+          </div>
+
+        </div>
+
+        <hr class="divider">
+
+        <div class="disclaimer">
+          ⚠️ <strong>Pre-Audit Dokument:</strong> Automatisch generiert auf Basis öffentlicher Behördendaten. Ersetzt keine zertifizierte Energiefachprüfung (DIN EN 16247-1). Endvalidierung durch zugelassenen WP/vBP oder Energieberater (§21 EDL-G) erforderlich.
+        </div>
+
+        <button class="btn-submit" id="btn-submit" onclick="submitForm()">
+          ⚡ Bericht jetzt erstellen
+        </button>
+
+      </div>
+    </div><!-- /form-view -->
+
+    <!-- LOADING VIEW -->
+    <div class="loading-card" id="loading-view">
+      <div class="spinner"></div>
+      <h3>Ihr Bericht wird erstellt…</h3>
+      <p>Wir rufen Live-Marktpreise ab und berechnen<br>Ihre individuellen Energiekosten und Einsparpotenziale.</p>
+      <div class="loading-steps">
+        <div class="loading-step active" id="ls1"><div class="ls-dot"></div>SMARD Live-Marktpreis abrufen</div>
+        <div class="loading-step" id="ls2"><div class="ls-dot"></div>Netzbetreiber &amp; Tarife ermitteln</div>
+        <div class="loading-step" id="ls3"><div class="ls-dot"></div>Kostenaufschlüsselung berechnen</div>
+        <div class="loading-step" id="ls4"><div class="ls-dot"></div>ESG / Scope-2-Emissionen ermitteln</div>
+        <div class="loading-step" id="ls5"><div class="ls-dot"></div>Compliance-Check &amp; Bericht finalisieren</div>
+      </div>
+    </div>
+
+    <!-- RESULT VIEW -->
+    <div class="result-card" id="result-view">
+      <div class="result-icon">✅</div>
+      <h3>Ihr StromAudit Pro Bericht ist fertig!</h3>
+      <p>Der Bericht enthält Ihre vollständige Kostenaufschlüsselung,<br>Einsparpotenziale und ESG-Kennzahlen.</p>
+      <a href="#" id="result-link" class="btn-download" target="_blank">
+        📄 Bericht öffnen / als PDF speichern
+      </a>
+      <div class="result-meta" id="result-meta"></div>
+    </div>
+
+    <!-- ERROR VIEW -->
+    <div class="error-card" id="error-view">
+      <div style="font-size:42px">❌</div>
+      <h3>Ein Fehler ist aufgetreten</h3>
+      <p id="error-msg">Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.</p>
+      <button class="btn-retry" onclick="resetForm()">↩ Erneut versuchen</button>
+    </div>
+
+  </div><!-- /card -->
+
+  <div class="footer">
+    StromAudit Pro · Deutsche Energie-Compliance &amp; ESG Pre-Audit Engine v3.5<br>
+    Datenquellen: SMARD – Bundesnetzagentur · ÜNB · UBA · BNetzA · IFEU<br>
+    <a href="https://www.smard.de" target="_blank">smard.de</a> ·
+    <a href="https://www.bundesnetzagentur.de" target="_blank">bundesnetzagentur.de</a> ·
+    <a href="https://www.umweltbundesamt.de" target="_blank">umweltbundesamt.de</a>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ─────────────────────────────────────────────────────────────────
+// CONFIGURATIE – pas deze 2 waarden aan in GitHub
+// ─────────────────────────────────────────────────────────────────
+const APIFY_ACTOR_ID  = "JOUW_ACTOR_ID_HIER";   // bijv. "abc123XYZ"
+const APIFY_API_TOKEN = "JOUW_API_TOKEN_HIER";   // Apify → Settings → Integrations
+
+// ─────────────────────────────────────────────────────────────────
+// Toggle produzierendes Gewerbe
+// ─────────────────────────────────────────────────────────────────
+function toggleProd() {
+  const row = document.getElementById("toggle-prod");
+  const inp = document.getElementById("is_producing");
+  const isOn = inp.value === "true";
+  inp.value = isOn ? "false" : "true";
+  row.classList.toggle("active", !isOn);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Validatie
+// ─────────────────────────────────────────────────────────────────
+function validate() {
+  let ok = true;
+
+  const plz = document.getElementById("plz").value.trim();
+  const errPlz = document.getElementById("err-plz");
+  if (!/^\d{5}$/.test(plz)) {
+    errPlz.classList.add("show");
+    document.getElementById("plz").classList.add("error");
+    ok = false;
+  } else {
+    errPlz.classList.remove("show");
+    document.getElementById("plz").classList.remove("error");
+  }
+
+  const kwh = parseFloat(document.getElementById("jahresverbrauch_kwh").value);
+  const errKwh = document.getElementById("err-kwh");
+  if (!kwh || kwh < 1000) {
+    errKwh.classList.add("show");
+    document.getElementById("jahresverbrauch_kwh").classList.add("error");
+    ok = false;
+  } else {
+    errKwh.classList.remove("show");
+    document.getElementById("jahresverbrauch_kwh").classList.remove("error");
+  }
+
+  const kw = parseFloat(document.getElementById("spitzenlast_kw").value);
+  const errKw = document.getElementById("err-kw");
+  if (isNaN(kw) || kw < 0) {
+    errKw.classList.add("show");
+    document.getElementById("spitzenlast_kw").classList.add("error");
+    ok = false;
+  } else {
+    errKw.classList.remove("show");
+    document.getElementById("spitzenlast_kw").classList.remove("error");
+  }
+
+  return ok;
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Loading stappen animatie
+// ─────────────────────────────────────────────────────────────────
+function animateLoadingSteps() {
+  const steps = ["ls1","ls2","ls3","ls4","ls5"];
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i > 0) {
+      document.getElementById(steps[i-1]).classList.remove("active");
+      document.getElementById(steps[i-1]).classList.add("done");
+    }
+    if (i < steps.length) {
+      document.getElementById(steps[i]).classList.add("active");
+      i++;
+    } else {
+      clearInterval(interval);
+    }
+  }, 4000);
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Views wisselen
+// ─────────────────────────────────────────────────────────────────
+function showView(name) {
+  ["form-view","loading-view","result-view","error-view"].forEach(v => {
+    const el = document.getElementById(v);
+    if (v === name) {
+      el.style.display = "block";
+      if (el.classList.contains("loading-card") || el.classList.contains("result-card") || el.classList.contains("error-card")) {
+        el.classList.add("show");
+      }
+    } else {
+      el.style.display = "none";
+      el.classList.remove("show");
+    }
+  });
+
+  // Stap-indicator bijwerken
+  if (name === "result-view") {
+    document.getElementById("step3").classList.add("active");
+  }
+}
+
+function resetForm() {
+  showView("form-view");
+  document.getElementById("form-view").style.display = "block";
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Wachten op Apify run (polling)
+// ─────────────────────────────────────────────────────────────────
+async function pollRunStatus(runId) {
+  const maxWait = 120; // seconden
+  const interval = 3;
+  let elapsed = 0;
+
+  while (elapsed < maxWait) {
+    await new Promise(r => setTimeout(r, interval * 1000));
+    elapsed += interval;
+
+    const resp = await fetch(
+      `https://api.apify.com/v2/actor-runs/${runId}?token=${APIFY_API_TOKEN}`
+    );
+    const data = await resp.json();
+    const status = data?.data?.status;
+
+    if (status === "SUCCEEDED") {
+      return data.data;
+    } else if (["FAILED","ABORTED","TIMED-OUT"].includes(status)) {
+      throw new Error(`Run mislukt met status: ${status}`);
+    }
+    // RUNNING of READY → doorgaan met wachten
+  }
+  throw new Error("Timeout: rapport duurde langer dan 2 minuten.");
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Formulier versturen
+// ─────────────────────────────────────────────────────────────────
+async function submitForm() {
+  if (!validate()) return;
+
+  const btn = document.getElementById("btn-submit");
+  btn.disabled = true;
+
+  showView("loading-view");
+  animateLoadingSteps();
+
+  const input = {
+    plz:                    document.getElementById("plz").value.trim(),
+    jahresverbrauch_kwh:    parseFloat(document.getElementById("jahresverbrauch_kwh").value),
+    spitzenlast_kw:         parseFloat(document.getElementById("spitzenlast_kw").value),
+    messstellenbetrieb_eur: parseFloat(document.getElementById("messstellenbetrieb_eur").value) || 250,
+    is_producing:           document.getElementById("is_producing").value === "true",
+    unternehmen:            document.getElementById("unternehmen").value.trim() || "Nicht angegeben",
+    anschrift:              document.getElementById("anschrift").value.trim() || "Nicht angegeben",
+    projekt_referenz:       document.getElementById("projekt_referenz").value.trim() || "",
+    berichtsjahr:           parseInt(document.getElementById("berichtsjahr").value),
+  };
+
+  try {
+    // ── Run starten ──
+    const startResp = await fetch(
+      `https://api.apify.com/v2/acts/${APIFY_ACTOR_ID}/runs?token=${APIFY_API_TOKEN}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      }
+    );
+
+    if (!startResp.ok) {
+      const err = await startResp.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${startResp.status}`);
+    }
+
+    const startData = await startResp.json();
+    const runId = startData?.data?.id;
+    if (!runId) throw new Error("Geen run-ID ontvangen van Apify.");
+
+    // ── Wachten tot klaar ──
+    const runData = await pollRunStatus(runId);
+    const storeId = runData.defaultKeyValueStoreId;
+
+    // ── Rapport-URL opbouwen ──
+    const reportUrl = `https://api.apify.com/v2/key-value-stores/${storeId}/records/audit_report.html?token=${APIFY_API_TOKEN}`;
+
+    // ── OUTPUT ophalen voor metadata ──
+    let meta = "";
+    try {
+      const outResp = await fetch(
+        `https://api.apify.com/v2/key-value-stores/${storeId}/records/OUTPUT?token=${APIFY_API_TOKEN}`
+      );
+      const outData = await outResp.json();
+      if (outData?.pruefnummer) {
+        meta = `Prüfnummer: ${outData.pruefnummer}\nErstellt: ${outData.erstellt_berlin}\nCompliance-Score: ${outData.compliance_score}/100\nBrutto-Jahreskosten: ${outData.kalkulation?.brutto_gesamt_eur?.toLocaleString("de-DE",{minimumFractionDigits:2})} €`;
+      }
+    } catch(_) {}
+
+    // ── Resultaat tonen ──
+    document.getElementById("result-link").href = reportUrl;
+    document.getElementById("result-meta").textContent = meta;
+    showView("result-view");
+
+  } catch (err) {
+    document.getElementById("error-msg").textContent = err.message || "Unbekannter Fehler. Bitte erneut versuchen.";
+    showView("error-view");
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
