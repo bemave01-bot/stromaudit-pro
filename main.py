@@ -11,6 +11,12 @@ Verbeteringen v3.1:
   - Configureerbare tarieven (CONFIG-dict)
   - Uitgebreide rapport-metadata (runtime, bronnen, versie)
 
+Verbeteringen v3.3:
+  - Benchmarking: Arbeitspreis vs. Bundesdurchschnitt vergleichbarer Betriebe (BDEW 2025)
+  - Einsparpotenzial-Banner prominent bovenaan het rapport (direct zichtbaar)
+  - 5-Jahres-Projektion in sectie 2b Einsparpotenziale
+  - BENCHMARK-dict toegevoegd (configureerbaar referentiegegeven)
+
 Verbeteringen v3.2:
   - SMARD timestamp-check verruimd (48u → 168u) zodat actuele data doorkomt
   - KPI-label conditioneel: "Fallback" bij SMARD-storing, "SMARD live" bij live data
@@ -43,7 +49,7 @@ from apify import Actor
 # ─────────────────────────────────────────────────────────────────────────────
 # CONFIGURATIE (alle tarieven en parameters op één plek)
 # ─────────────────────────────────────────────────────────────────────────────
-REPORT_VERSION = "3.2"
+REPORT_VERSION = "3.3"
 TZ_BERLIN      = ZoneInfo("Europe/Berlin")
 
 # SMARD
@@ -91,6 +97,17 @@ CONFIG = {
     "max_kw":                100_000,
     "min_msb":               0,
     "max_msb":               50_000,
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BENCHMARK-DATEN (Bundesdurchschnitt vergleichbarer Betriebe)
+# Quelle: BDEW Strompreisanalyse 2025 / BNetzA – Gewerbe < 100 MWh/Jahr
+# ─────────────────────────────────────────────────────────────────────────────
+BENCHMARK = {
+    # Bundesdurchschnitt Arbeitspreis (netto, ct/kWh) – Gewerbe < 500 MWh
+    "arbeitspreis_ct_kwh":    21.20,
+    # Quelle
+    "quelle": "BDEW Strompreisanalyse 2025 / BNetzA (Gewerbe ≤ 500 MWh)",
 }
 
 GESETZ_REFS = [
@@ -646,6 +663,26 @@ def generiere_html(
 
     ts_display = now_berlin.strftime("%d.%m.%Y %H:%M Uhr (MEZ/MESZ)")
 
+    # ── Benchmarking ────────────────────────────────────────────────────────
+    arbeitspreis_ct    = kalk["arbeitspreis_netto_eur_kwh"] * 100
+    bench_ct           = BENCHMARK["arbeitspreis_ct_kwh"]
+    bench_delta_pct    = ((arbeitspreis_ct - bench_ct) / bench_ct) * 100
+    bench_above        = bench_delta_pct > 0
+    bench_sign         = "+" if bench_above else ""
+    bench_color        = "#c0392b" if bench_above else "#1a7a3c"
+    bench_arrow        = "▲" if bench_above else "▼"
+    bench_html = (
+        f'<span style="color:{bench_color};font-weight:700">'
+        f'{bench_arrow} {bench_sign}{de_num(bench_delta_pct, 1)}% gegenüber Bundesdurchschnitt'
+        f'</span> ({de_ct(bench_ct)} ct/kWh · {esc(BENCHMARK["quelle"])})'
+    )
+
+    # ── Gesamtes Einsparpotenzial (für Header-Banner) ───────────────────────
+    einspar_9b_val          = kalk["stromsteuer_entlastung_9b_eur"] if prod else 0.0
+    peak_shaving_val        = round(kalk["leistungskosten_netto_eur"] * 0.10, 0)
+    einspar_gesamt          = einspar_9b_val + peak_shaving_val
+    einspar_5j              = einspar_gesamt * 5
+
     # ── Waarschuwingen ──────────────────────────────────────────────────────
     warn_html = ""
     if warnings:
@@ -797,8 +834,8 @@ def generiere_html(
     data_age     = f"{markt.get('data_age_hours', '—')} Stunden" if not markt.get("is_fallback") else "Nicht verfügbar (Fallback aktiv)"
 
     # ── Einsparpotenziale ───────────────────────────────────────────────────
-    peak_shaving_theoretisch = round(kalk["leistungskosten_netto_eur"] * 0.10, 0)
-    einspar_9b   = kalk["stromsteuer_entlastung_9b_eur"]
+    peak_shaving_theoretisch = peak_shaving_val
+    einspar_9b   = einspar_9b_val
     einspar_rows = ""
     if prod and einspar_9b > 0:
         einspar_rows += f"""<tr><td>§9b StromStG – Stromsteuerentlastung</td>
@@ -817,7 +854,13 @@ def generiere_html(
   <thead><tr><th>Maßnahme</th><th class="r">Potenzial</th><th>Hinweis</th></tr></thead>
   <tbody>{einspar_rows}</tbody>
 </table>
-<p class="src">Peak-Shaving-Wert ist eine theoretische Schätzung ohne Gewähr. §19-Potenzial nur nach Netzbetreiberprüfung realisierbar.</p>
+<div class="box blue" style="margin-top:10px;font-size:12px">
+  <strong>📅 Mehrjahresprojektion:</strong> Bei gleichbleibendem Verbrauch und konsequenter
+  Umsetzung aller Maßnahmen ergibt sich über <strong>5 Jahre</strong> ein kumuliertes
+  Einsparpotenzial von <strong style="font-size:14px;color:#1a4a7a">{de_eur(einspar_5j)} €</strong>
+  (§9b + Peak-Shaving, ohne §19-StromNEV-Potenzial).
+</div>
+<p class="src">Peak-Shaving-Wert ist eine theoretische Schätzung ohne Gewähr. §19-Potenzial nur nach Netzbetreiberprüfung realisierbar. Mehrjahresprojektion ohne Preissteigerungen berechnet.</p>
 </div>"""
 
     return f"""<!DOCTYPE html>
@@ -872,6 +915,19 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
 .box.red{{background:#fff0f0;border-left:4px solid #c0392b}}
 .tbl-wrap{{page-break-inside:avoid;break-inside:avoid}}
 .hash-box{{font-family:monospace;font-size:10px;background:#f5f5f5;border:1px solid #ddd;border-radius:4px;padding:8px 12px;word-break:break-all;color:#555;margin-top:8px}}
+.savings-banner{{background:linear-gradient(135deg,#0d3b1a 0%,#1a7a3c 100%);padding:18px 48px 14px;color:#fff}}
+.savings-banner-inner{{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:10px}}
+.savings-main{{display:flex;align-items:center;gap:16px}}
+.savings-icon{{font-size:36px;line-height:1}}
+.savings-title{{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.8;margin-bottom:2px}}
+.savings-amount{{font-size:28px;font-weight:800;color:#7eeaa0;line-height:1.1}}
+.savings-sub{{font-size:11px;opacity:.8;margin-top:4px}}
+.savings-5y{{text-align:right}}
+.savings-5y-label{{font-size:11px;text-transform:uppercase;letter-spacing:.08em;opacity:.7;margin-bottom:2px}}
+.savings-5y-amount{{font-size:22px;font-weight:800;color:#ffd166}}
+.savings-5y-sub{{font-size:10px;opacity:.65}}
+.savings-bench{{font-size:11.5px;opacity:.85;border-top:1px solid rgba(255,255,255,.2);padding-top:10px}}
+.savings-bench strong{{color:#fff}}
 .ftr{{background:#0a2540;color:rgba(255,255,255,.65);padding:20px 48px;font-size:10.5px;line-height:1.8}}
 .ftr strong{{color:#fff}}
 .src{{font-size:10px;color:#999;margin-top:5px;font-style:italic}}
@@ -929,6 +985,30 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
   Marktpreis: {esc(markt['source'])}.
 </div>
 
+<div class="savings-banner">
+  <div class="savings-banner-inner">
+    <div class="savings-main">
+      <span class="savings-icon">💡</span>
+      <div>
+        <div class="savings-title">Identifiziertes Einsparpotenzial</div>
+        <div class="savings-amount">bis zu {de_eur(einspar_gesamt)} €/Jahr</div>
+        <div class="savings-sub">
+          §9b StromStG: <strong>{de_eur(einspar_9b_val)} €</strong> &nbsp;·&nbsp;
+          Peak-Shaving (–10%): <strong>{de_eur(peak_shaving_val)} €</strong>
+        </div>
+      </div>
+    </div>
+    <div class="savings-5y">
+      <div class="savings-5y-label">5-Jahres-Projektion</div>
+      <div class="savings-5y-amount">{de_eur(einspar_5j)} €</div>
+      <div class="savings-5y-sub">bei gleichbleibendem Verbrauch</div>
+    </div>
+  </div>
+  <div class="savings-bench">
+    Ihr Arbeitspreis: <strong>{de_ct(arbeitspreis_ct)} ct/kWh</strong> &nbsp;·&nbsp; {bench_html}
+  </div>
+</div>
+
 {"<div class='sec'>" + warn_html + fallback_html + cached_html + "</div>" if (warn_html or fallback_html or cached_html) else ""}
 
 <div class="sec">
@@ -974,6 +1054,12 @@ tfoot td{{background:#0a2540!important;color:#fff;font-weight:700;border:none}}
     <div class="sub">Prüfbereitschaft</div></div>
 </div>
 </div>
+<div class="box {'red' if bench_above else 'green'}" style="margin-top:10px;font-size:12px">
+  <strong>📊 Benchmark:</strong> Ihr Arbeitspreis ({de_ct(arbeitspreis_ct)} ct/kWh) liegt
+  <strong style="color:{bench_color}">{bench_sign}{de_num(bench_delta_pct,1)}%
+  {'über' if bench_above else 'unter'} dem Bundesdurchschnitt</strong>
+  vergleichbarer Betriebe ({de_ct(bench_ct)} ct/kWh · {esc(BENCHMARK['quelle'])}).
+  {'Optimierungspotenzial vorhanden – Vergleich Stromangebote empfohlen.' if bench_above else 'Ihr Tarif ist wettbewerbsfähig.'}
 </div>
 
 {blok_einspar}
