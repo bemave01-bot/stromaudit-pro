@@ -1439,6 +1439,21 @@ async def main():
 
         # ── Dataset & OUTPUT ───────────────────────────────────────────────
         store_id   = Actor.get_env().get("default_key_value_store_id", "")
+
+        # Key-value store publiek maken zodat rapport-URL geen token nodig heeft
+        if store_id:
+            try:
+                apify_token = os.environ.get("APIFY_TOKEN", "")
+                async with httpx.AsyncClient(timeout=10) as hc:
+                    await hc.put(
+                        f"https://api.apify.com/v2/key-value-stores/{store_id}",
+                        headers={"Authorization": f"Bearer {apify_token}"},
+                        json={"isPublic": True},
+                    )
+                Actor.log.info("   Key-value store publiek gemaakt ✅")
+            except Exception as e:
+                Actor.log.warning(f"   Store publiek maken mislukt: {e}")
+
         report_url = (
             f"https://api.apify.com/v2/key-value-stores/{store_id}/records/audit_report.html"
             if store_id else "—"
