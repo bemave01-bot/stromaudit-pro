@@ -465,14 +465,14 @@ input.error { border-color: var(--red); }
 <div class="container">
 
   <div class="steps">
-    <div class="step done" id="step1">
-      <div class="step-dot">✓</div>
-      <span>Zahlung</span>
+    <div class="step active" id="step1">
+      <div class="step-dot">1</div>
+      <span>Daten eingeben</span>
     </div>
     <div class="step-line"></div>
-    <div class="step active" id="step2">
+    <div class="step" id="step2">
       <div class="step-dot">2</div>
-      <span>Daten eingeben</span>
+      <span>Zahlung</span>
     </div>
     <div class="step-line"></div>
     <div class="step" id="step3">
@@ -572,7 +572,7 @@ input.error { border-color: var(--red); }
         </div>
 
         <button class="btn-submit" id="btn-submit" onclick="submitForm()">
-          ⚡ Bericht jetzt erstellen
+          🔒 Weiter zur sicheren Zahlung →
         </button>
 
       </div>
@@ -624,6 +624,20 @@ input.error { border-color: var(--red); }
 </div><!-- /container -->
 
 <script>
+// ═══════════════════════════════════════════════════════════════════
+// ⚙️  CONFIGURATIE – alleen hier aanpassen
+// ═══════════════════════════════════════════════════════════════════
+
+const TEST_MODE = true;
+// true  → geen Digistore, data gaat direct naar danke.html (gratis testen)
+// false → live: data gaat naar Digistore24 kassa, klant betaalt
+
+// Digistore24 product-URL – invullen nadat product is aangemaakt (Stap B)
+const DIGISTORE_URL = "https://www.digistore24.com/product/JOUW_PRODUCT_ID";
+
+// ═══════════════════════════════════════════════════════════════════
+
+
 // ─────────────────────────────────────────────────────────────────
 // Toggle produzierendes Gewerbe
 // ─────────────────────────────────────────────────────────────────
@@ -713,8 +727,6 @@ function showView(name) {
       el.classList.remove("show");
     }
   });
-
-  // Stap-indicator bijwerken
   if (name === "result-view") {
     document.getElementById("step3").classList.add("active");
   }
@@ -726,18 +738,10 @@ function resetForm() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Formulier versturen → via Netlify functie (token blijft verborgen)
+// Formulierdata verzamelen
 // ─────────────────────────────────────────────────────────────────
-async function submitForm() {
-  if (!validate()) return;
-
-  const btn = document.getElementById("btn-submit");
-  btn.disabled = true;
-
-  showView("loading-view");
-  animateLoadingSteps();
-
-  const input = {
+function collectInput() {
+  return {
     plz:                    document.getElementById("plz").value.trim(),
     jahresverbrauch_kwh:    parseFloat(document.getElementById("jahresverbrauch_kwh").value),
     spitzenlast_kw:         parseFloat(document.getElementById("spitzenlast_kw").value),
@@ -748,35 +752,37 @@ async function submitForm() {
     projekt_referenz:       document.getElementById("projekt_referenz").value.trim() || "",
     berichtsjahr:           parseInt(document.getElementById("berichtsjahr").value),
   };
+}
 
-  try {
-    // ── Stuur naar Netlify functie (nooit rechtstreeks naar Apify) ──
-    const resp = await fetch("/.netlify/functions/run-actor", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
-    });
+// ─────────────────────────────────────────────────────────────────
+// Data → Base64 coderen
+// ─────────────────────────────────────────────────────────────────
+function encodeToBase64(obj) {
+  const json = JSON.stringify(obj);
+  // btoa() werkt alleen met ASCII – UTF-8 tekens (umlauts etc.) eerst escapen
+  return btoa(unescape(encodeURIComponent(json)));
+}
 
-    const data = await resp.json();
+// ─────────────────────────────────────────────────────────────────
+// HOOFD FUNCTIE – knop "Bericht erstellen"
+// ─────────────────────────────────────────────────────────────────
+function submitForm() {
+  if (!validate()) return;
 
-    if (!resp.ok) {
-      throw new Error(data?.error || `Serverfout ${resp.status}`);
-    }
+  const input   = collectInput();
+  const encoded = encodeToBase64(input);
 
-    // ── Resultaat tonen ──
-    document.getElementById("result-link").href = data.reportUrl;
+  if (TEST_MODE) {
+    // ── TESTMODUS: sla Digistore over, ga direct naar danke.html ──
+    console.log("[TEST_MODE] Base64 payload:", encoded);
+    window.location.href = "/danke.html?data=" + encoded + "&test=1";
 
-    let meta = "";
-    if (data.meta?.pruefnummer) {
-      meta = `Prüfnummer: ${data.meta.pruefnummer}\nErstellt: ${data.meta.erstellt_berlin}\nCompliance-Score: ${data.meta.compliance_score}/100\nBrutto-Jahreskosten: ${data.meta.kalkulation?.brutto_gesamt_eur?.toLocaleString("de-DE",{minimumFractionDigits:2})} €`;
-    }
-    document.getElementById("result-meta").textContent = meta;
-    showView("result-view");
-
-  } catch (err) {
-    document.getElementById("error-msg").textContent = err.message || "Unbekannter Fehler. Bitte erneut versuchen.";
-    showView("error-view");
-    btn.disabled = false;
+  } else {
+    // ── LIVEMODUS: stuur klant naar Digistore24 kassa ──
+    // Digistore stuurt klant terug naar danke.html?data=... na betaling
+    // De return URL wordt ingesteld in je Digistore product (Stap B)
+    const kasseUrl = DIGISTORE_URL + "?data=" + encodeURIComponent(encoded);
+    window.location.href = kasseUrl;
   }
 }
 </script>
