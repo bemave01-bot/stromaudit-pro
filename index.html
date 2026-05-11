@@ -625,12 +625,6 @@ input.error { border-color: var(--red); }
 
 <script>
 // ─────────────────────────────────────────────────────────────────
-// CONFIGURATIE – pas deze 2 waarden aan in GitHub
-// ─────────────────────────────────────────────────────────────────
-const APIFY_ACTOR_ID  = "audit-data-solutions~stromaudit-pro-v2-deutsche-energie-compliance-esg";   // bijv. "abc123XYZ"
-const APIFY_API_TOKEN = "         ";   // Apify → Settings → Integrations
-
-// ─────────────────────────────────────────────────────────────────
 // Toggle produzierendes Gewerbe
 // ─────────────────────────────────────────────────────────────────
 function toggleProd() {
@@ -732,35 +726,7 @@ function resetForm() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Wachten op Apify run (polling)
-// ─────────────────────────────────────────────────────────────────
-async function pollRunStatus(runId) {
-  const maxWait = 120; // seconden
-  const interval = 3;
-  let elapsed = 0;
-
-  while (elapsed < maxWait) {
-    await new Promise(r => setTimeout(r, interval * 1000));
-    elapsed += interval;
-
-    const resp = await fetch(
-      `https://api.apify.com/v2/actor-runs/${runId}?token=${APIFY_API_TOKEN}`
-    );
-    const data = await resp.json();
-    const status = data?.data?.status;
-
-    if (status === "SUCCEEDED") {
-      return data.data;
-    } else if (["FAILED","ABORTED","TIMED-OUT"].includes(status)) {
-      throw new Error(`Run mislukt met status: ${status}`);
-    }
-    // RUNNING of READY → doorgaan met wachten
-  }
-  throw new Error("Timeout: rapport duurde langer dan 2 minuten.");
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Formulier versturen
+// Formulier versturen → via Netlify functie (token blijft verborgen)
 // ─────────────────────────────────────────────────────────────────
 async function submitForm() {
   if (!validate()) return;
@@ -784,46 +750,26 @@ async function submitForm() {
   };
 
   try {
-    // ── Run starten ──
-    const startResp = await fetch(
-      `https://api.apify.com/v2/acts/${APIFY_ACTOR_ID}/runs?token=${APIFY_API_TOKEN}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
-      }
-    );
+    // ── Stuur naar Netlify functie (nooit rechtstreeks naar Apify) ──
+    const resp = await fetch("/.netlify/functions/run-actor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
 
-    if (!startResp.ok) {
-      const err = await startResp.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `HTTP ${startResp.status}`);
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      throw new Error(data?.error || `Serverfout ${resp.status}`);
     }
 
-    const startData = await startResp.json();
-    const runId = startData?.data?.id;
-    if (!runId) throw new Error("Geen run-ID ontvangen van Apify.");
-
-    // ── Wachten tot klaar ──
-    const runData = await pollRunStatus(runId);
-    const storeId = runData.defaultKeyValueStoreId;
-
-    // ── Rapport-URL opbouwen ──
-    const reportUrl = `https://api.apify.com/v2/key-value-stores/${storeId}/records/audit_report.html?token=${APIFY_API_TOKEN}`;
-
-    // ── OUTPUT ophalen voor metadata ──
-    let meta = "";
-    try {
-      const outResp = await fetch(
-        `https://api.apify.com/v2/key-value-stores/${storeId}/records/OUTPUT?token=${APIFY_API_TOKEN}`
-      );
-      const outData = await outResp.json();
-      if (outData?.pruefnummer) {
-        meta = `Prüfnummer: ${outData.pruefnummer}\nErstellt: ${outData.erstellt_berlin}\nCompliance-Score: ${outData.compliance_score}/100\nBrutto-Jahreskosten: ${outData.kalkulation?.brutto_gesamt_eur?.toLocaleString("de-DE",{minimumFractionDigits:2})} €`;
-      }
-    } catch(_) {}
-
     // ── Resultaat tonen ──
-    document.getElementById("result-link").href = reportUrl;
+    document.getElementById("result-link").href = data.reportUrl;
+
+    let meta = "";
+    if (data.meta?.pruefnummer) {
+      meta = `Prüfnummer: ${data.meta.pruefnummer}\nErstellt: ${data.meta.erstellt_berlin}\nCompliance-Score: ${data.meta.compliance_score}/100\nBrutto-Jahreskosten: ${data.meta.kalkulation?.brutto_gesamt_eur?.toLocaleString("de-DE",{minimumFractionDigits:2})} €`;
+    }
     document.getElementById("result-meta").textContent = meta;
     showView("result-view");
 
