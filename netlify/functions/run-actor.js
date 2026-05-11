@@ -81,8 +81,7 @@ exports.handler = async function (event) {
         const storeId = statusData.data.defaultKeyValueStoreId;
 
         // Rapport-URL opbouwen — token zit server-side, niet in de HTML
-        const reportUrl = `https://api.apify.com/v2/key-value-stores/${storeId}/records/audit_report.html?token=${APIFY_TOKEN}`;
-
+        const reportUrl = `https://api.apify.com/v2/key-value-stores/${storeId}/records/audit_report.html`;
         // Metadata ophalen voor resultaatscherm
         let meta = {};
         try {
