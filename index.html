@@ -628,12 +628,12 @@ input.error { border-color: var(--red); }
 // ⚙️  CONFIGURATIE – alleen hier aanpassen
 // ═══════════════════════════════════════════════════════════════════
 
-const TEST_MODE = true;
+const TEST_MODE = false;
 // true  → geen Digistore, data gaat direct naar danke.html (gratis testen)
 // false → live: data gaat naar Digistore24 kassa, klant betaalt
 
-// Digistore24 product-URL – invullen nadat product is aangemaakt (Stap B)
-const DIGISTORE_URL = "https://www.digistore24.com/product/JOUW_PRODUCT_ID";
+// Digistore24 product-URL
+const DIGISTORE_URL = "https://www.checkout-ds24.com/product/690561";
 
 // ═══════════════════════════════════════════════════════════════════
 
@@ -781,7 +781,7 @@ function submitForm() {
     // ── LIVEMODUS: stuur klant naar Digistore24 kassa ──
     // Digistore stuurt klant terug naar danke.html?data=... na betaling
     // De return URL wordt ingesteld in je Digistore product (Stap B)
-    const kasseUrl = DIGISTORE_URL + "?data=" + encodeURIComponent(encoded);
+    const kasseUrl = DIGISTORE_URL + "?custom=" + encodeURIComponent(encoded);
     window.location.href = kasseUrl;
   }
 }
