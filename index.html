@@ -571,6 +571,11 @@ input.error { border-color: var(--red); }
           ⚠️ <strong>Pre-Audit Dokument:</strong> Automatisch generiert auf Basis öffentlicher Behördendaten. Ersetzt keine zertifizierte Energiefachprüfung (DIN EN 16247-1). Endvalidierung durch zugelassenen WP/vBP oder Energieberater (§21 EDL-G) erforderlich.
         </div>
 
+        <div style="margin-bottom:16px;padding:14px 18px;background:#f7f9ff;border:1.5px solid var(--border);border-radius:8px;font-size:11px;color:var(--muted);line-height:1.7;">
+          &#8617;&#65039; <strong style="color:var(--navy);">Widerrufsrecht:</strong> Sie haben das Recht, binnen 14 Tagen ohne Angabe von Gr&uuml;nden diesen Vertrag zu widerrufen. Die Widerrufsfrist betr&auml;gt 14 Tage ab dem Tag des Vertragsabschlusses.<br>
+          &#x1F4B3; <strong style="color:var(--navy);">Zahlung &amp; Abrechnung:</strong> Die sichere Zahlungsabwicklung erfolgt &uuml;ber <strong>Digistore24</strong>. Ihre Kreditkartenabrechnung zeigt eine Abbuchung von Digistore24.
+        </div>
+
         <button class="btn-submit" id="btn-submit" onclick="submitForm()">
           🔒 Weiter zur sicheren Zahlung →
         </button>
@@ -632,7 +637,7 @@ const TEST_MODE = false;
 // true  → geen Digistore, data gaat direct naar danke.html (gratis testen)
 // false → live: data gaat naar Digistore24 kassa, klant betaalt
 
-// Digistore24 product-URL
+// Digistore24 product-URL – invullen nadat product is aangemaakt (Stap B)
 const DIGISTORE_URL = "https://www.checkout-ds24.com/product/690561";
 
 // ═══════════════════════════════════════════════════════════════════
