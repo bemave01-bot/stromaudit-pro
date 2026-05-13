@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Support & Hilfe – StromAudit Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #0a2540;
+  --blue:   #1a4a7a;
+  --sky:    #7ecef4;
+  --green:  #1a7a3c;
+  --mint:   #7eeaa0;
+  --gold:   #f0a500;
+  --red:    #c0392b;
+  --bg:     #f0f2f7;
+  --white:  #ffffff;
+  --border: #dde3f0;
+  --text:   #1a1a1a;
+  --muted:  #6b7280;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff; padding: 36px 24px 32px; text-align: center;
+  position: relative; overflow: hidden;
+}
+.header::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(126,206,244,.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.header-badge {
+  display: inline-block; background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25); border-radius: 20px;
+  padding: 4px 14px; font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 14px; color: var(--sky);
+}
+.header h1 { font-size: clamp(22px,5vw,32px); font-weight: 700; letter-spacing: -.02em; margin-bottom: 8px; }
+.header h1 span { color: var(--sky); }
+.header p { font-size: 14px; opacity: .75; max-width: 560px; margin: 0 auto; line-height: 1.6; }
+.logo-mark { font-size: 38px; margin-bottom: 10px; display: block; filter: drop-shadow(0 0 12px rgba(126,206,244,.4)); }
+
+.trust-bar {
+  background: var(--navy); border-top: 1px solid rgba(255,255,255,.08);
+  padding: 10px 24px; display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+}
+.trust-item { color: rgba(255,255,255,.6); font-size: 11px; display: flex; align-items: center; gap: 6px; }
+.trust-item strong { color: rgba(255,255,255,.9); }
+
+.container { max-width: 780px; margin: 0 auto; padding: 32px 16px 60px; }
+
+.ds-banner {
+  background: linear-gradient(135deg, #1a4a7a 0%, #0a2540 100%);
+  border-radius: 12px; padding: 20px 24px; margin-bottom: 28px;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+}
+.ds-banner-icon { font-size: 36px; flex-shrink: 0; }
+.ds-banner-text h3 { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.ds-banner-text p { color: rgba(255,255,255,.7); font-size: 12px; line-height: 1.5; }
+.ds-btn {
+  margin-left: auto; background: var(--sky); color: var(--navy);
+  padding: 11px 22px; border-radius: 8px; font-weight: 700; font-size: 13px;
+  text-decoration: none; white-space: nowrap; transition: opacity .15s;
+}
+.ds-btn:hover { opacity: .88; }
+
+.section-title {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  letter-spacing: .1em; text-transform: uppercase;
+  margin: 32px 0 12px; padding-left: 4px;
+}
+
+.card {
+  background: var(--white); border-radius: 12px;
+  box-shadow: 0 2px 20px rgba(10,37,64,.08), 0 0 0 1px var(--border);
+  overflow: hidden; margin-bottom: 16px;
+}
+.card-header {
+  background: linear-gradient(135deg, #f7f9ff 0%, #eef2fb 100%);
+  border-bottom: 1px solid var(--border); padding: 18px 24px;
+  display: flex; align-items: center; gap: 14px;
+}
+.card-header-icon {
+  width: 40px; height: 40px; background: var(--navy); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
+}
+.card-header h2 { font-size: 14px; font-weight: 700; color: var(--navy); }
+.card-header p { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.card-body { padding: 0; }
+
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question {
+  padding: 16px 24px; font-size: 13px; font-weight: 600; color: var(--navy);
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+  background: #fff; user-select: none; transition: background .1s; gap: 12px;
+}
+.faq-question:hover { background: #f7f9ff; }
+.faq-arrow { font-size: 11px; color: var(--muted); transition: transform .2s; flex-shrink: 0; }
+.faq-item.open .faq-arrow { transform: rotate(180deg); }
+.faq-answer {
+  display: none; padding: 14px 24px 18px; font-size: 12px; color: #444;
+  line-height: 1.75; border-top: 1px solid var(--border); background: #fafbff;
+}
+.faq-answer a { color: var(--blue); text-decoration: underline; }
+.faq-answer strong { color: var(--navy); }
+.faq-answer ul { padding-left: 18px; margin: 8px 0; }
+.faq-answer ul li { margin-bottom: 5px; }
+.faq-answer .law-block {
+  background: #f0f2f7; border-left: 3px solid var(--blue);
+  border-radius: 0 6px 6px 0; padding: 10px 14px; margin-top: 10px;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); line-height: 1.7;
+}
+.faq-item.open .faq-answer { display: block; }
+
+.warning-box {
+  background: #fff8e1; border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0; padding: 14px 16px;
+  font-size: 12px; color: #7a5a00; line-height: 1.6; margin-bottom: 16px;
+}
+.warning-box strong { display: block; margin-bottom: 3px; font-size: 13px; }
+
+.footer {
+  text-align: center; padding: 20px; font-size: 11px; color: var(--muted); line-height: 1.9;
+}
+.footer a { color: var(--blue); text-decoration: none; }
+
+@media (max-width: 520px) {
+  .ds-banner { flex-direction: column; }
+  .ds-btn { margin-left: 0; width: 100%; text-align: center; }
+  .faq-question { padding: 14px 16px; }
+  .faq-answer { padding: 12px 16px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="logo-mark">⚡</span>
+  <div class="header-badge">Support & Hilfe · StromAudit Pro</div>
+  <h1>Hilfe & <span>Support</span></h1>
+  <p>Hier finden Sie Antworten auf die häufigsten Fragen zu Ihrem StromAudit Pro Bericht. Bitte lesen Sie die entsprechende Kategorie sorgfältig durch, bevor Sie den Support kontaktieren.</p>
+</div>
+
+<div class="trust-bar">
+  <div class="trust-item">📋 <strong>Rechtsgrundlagen</strong> vollständig dokumentiert</div>
+  <div class="trust-item">🔐 <strong>SHA-256</strong> Manipulationsschutz</div>
+  <div class="trust-item">🇩🇪 <strong>Daten</strong> aus deutschen Behördenquellen</div>
+  <div class="trust-item">💳 <strong>Zahlung</strong> via Digistore24</div>
+</div>
+
+<div class="container">
+
+  <div class="ds-banner">
+    <div class="ds-banner-icon">💳</div>
+    <div class="ds-banner-text">
+      <h3>Fragen zu Zahlung, Rechnung oder Rückerstattung?</h3>
+      <p>Diese werden ausschließlich von Digistore24 bearbeitet — mit vollem Zugriff auf Ihre Bestelldaten. Bitte halten Sie Ihre Bestellnummer bereit.</p>
+    </div>
+    <a class="ds-btn" href="https://www.digistore24.com/de/kontakt" target="_blank">→ Digistore24 kontaktieren</a>
+  </div>
+
+  <!-- 1: Bestellung -->
+  <div class="section-title">1 · Bestellung & Lieferung</div>
+  <div class="card">
+    <div class="card-body">
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Ich habe bezahlt, aber der Bericht wurde nicht angezeigt. <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Nach erfolgreicher Zahlung werden Sie automatisch auf die Berichtsseite weitergeleitet. Falls dies nicht geschehen ist, prüfen Sie bitte folgende Punkte in dieser Reihenfolge:
+          <ul>
+            <li>Wurde die Zahlung tatsächlich abgeschlossen? Prüfen Sie Ihre E-Mails auf eine Bestätigung von Digistore24.</li>
+            <li>Wurde Ihr Browser durch einen Pop-up-Blocker oder eine Sicherheitserweiterung blockiert? Deaktivieren Sie diese temporär.</li>
+            <li>Leeren Sie den Browser-Cache (Strg+Shift+Delete) und versuchen Sie es erneut.</li>
+            <li>Versuchen Sie einen anderen Browser: Google Chrome (empfohlen), Mozilla Firefox oder Microsoft Edge.</li>
+            <li>Prüfen Sie, ob JavaScript in Ihrem Browser aktiviert ist.</li>
+          </ul>
+          Falls das Problem weiterhin besteht, wenden Sie sich mit Ihrer Bestellnummer an <a href="https://www.digistore24.com/de/kontakt" target="_blank">Digistore24</a>.
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Ich habe keine Kaufbestätigung per E-Mail erhalten. <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Die Kaufbestätigung wird automatisch von Digistore24 versendet, nicht von StromAudit Pro. Bitte prüfen Sie:
+          <ul>
+            <li>Ihren Spam- oder Junk-Ordner</li>
+            <li>Ob die E-Mail-Adresse bei der Bestellung korrekt eingegeben wurde</li>
+            <li>Ihren Promotions-Tab (bei Gmail)</li>
+          </ul>
+          Falls keine E-Mail angekommen ist, wenden Sie sich direkt an <a href="https://www.digistore24.com/de/kontakt" target="_blank">Digistore24</a> — diese können die Bestätigung erneut senden.
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Wie lange ist mein Bericht verfügbar? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Ihr Bericht wird unmittelbar nach der Bezahlung generiert und direkt im Browser angezeigt. Wir empfehlen, den Bericht sofort als PDF zu speichern:<br><br>
+          <strong>Chrome/Edge:</strong> Drucken (Strg+P) → Ziel: „Als PDF speichern" → Speichern<br>
+          <strong>Firefox:</strong> Drucken (Strg+P) → „PDF" auswählen → Speichern<br><br>
+          StromAudit Pro speichert keine Berichte auf Servern. Der Bericht existiert nur in Ihrer Browser-Sitzung. Nach dem Schließen des Browsers ist er nicht mehr abrufbar.
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Ich möchte eine Rückerstattung beantragen. <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Sie haben gemäß unserem Rückgaberecht <strong>14 Tage</strong> ab Kaufdatum, um eine Rückerstattung zu beantragen. Rückerstattungen werden ausschließlich über Digistore24 abgewickelt — StromAudit Pro hat keinen Zugriff auf Zahlungsdaten.<br><br>
+          Bitte wenden Sie sich direkt an: <a href="https://www.digistore24.com/de/kontakt" target="_blank">digistore24.com/de/kontakt</a><br><br>
+          Halten Sie Ihre Bestellnummer bereit. Digistore24 bearbeitet Rückerstattungsanträge in der Regel innerhalb von 5 Werktagen.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2: Technisch -->
+  <div class="section-title">2 · Technische Voraussetzungen & Browser</div>
+  <div class="card">
+    <div class="card-body">
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Welche Browser werden unterstützt? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          StromAudit Pro wurde für folgende Browser optimiert:
+          <ul>
+            <li><strong>Google Chrome</strong> ab Version 110 (empfohlen)</li>
+            <li><strong>Mozilla Firefox</strong> ab Version 110</li>
+            <li><strong>Microsoft Edge</strong> ab Version 110</li>
+            <li><strong>Safari</strong> ab macOS 13 (Ventura)</li>
+          </ul>
+          <strong>Nicht unterstützt:</strong> Internet Explorer (alle Versionen), Safari unter macOS 12 oder älter, ältere Android-Browser.<br><br>
+          JavaScript muss aktiviert sein. Bitte deaktivieren Sie Script-Blocker oder fügen Sie die Seite zur Whitelist hinzu.
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Der Bericht lädt sehr langsam oder bleibt hängen. <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Die Berichtsgenerierung bezieht Live-Daten von der Bundesnetzagentur (SMARD) und dauert in der Regel 10–30 Sekunden. Bij langsamer Verbindung kann es länger dauern. Bitte:
+          <ul>
+            <li>Warten Sie mindestens 60 Sekunden, bevor Sie die Seite neu laden</li>
+            <li>Stellen Sie sicher, dass Ihre Internetverbindung stabil ist</li>
+            <li>Schließen Sie andere Tabs und Anwendungen</li>
+            <li>Deaktivieren Sie VPN oder Proxy temporär</li>
+          </ul>
+          Falls der Bericht nach 60 Sekunden noch nicht erscheint, laden Sie die Seite neu (F5). Falls das Problem anhält, wenden Sie sich an <a href="https://www.digistore24.com/de/kontakt" target="_blank">Digistore24</a>.
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Wie speichere ich meinen Bericht als PDF? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Der Bericht wird als HTML-Dokument im Browser angezeigt und lässt sich einfach als PDF speichern:
+          <ul>
+            <li><strong>Windows:</strong> Strg + P → Bei „Drucker" wählen Sie „Als PDF speichern" → Drucken</li>
+            <li><strong>Mac:</strong> Cmd + P → Unten links „PDF" → „Als PDF sichern"</li>
+            <li><strong>Chrome-Tipp:</strong> Stellen Sie das Layout auf „Querformat" für optimale Darstellung</li>
+          </ul>
+          Wir empfehlen, den Bericht unmittelbar nach der Anzeige zu speichern, da er nicht dauerhaft auf unseren Servern gespeichert wird.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 3: Rapportinhoud -->
+  <div class="section-title">3 · Inhalt des Berichts</div>
+  <div class="card">
+    <div class="card-body">
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Was bedeutet §9b StromStG in meinem Bericht? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          §9b des Stromsteuergesetzes (StromStG) ermöglicht Unternehmen des <strong>Produzierenden Gewerbes</strong> eine erhebliche Stromsteuerermäßigung: von 20,50 ct/kWh auf 0,50 ct/kWh.<br><br>
+          <strong>Voraussetzungen:</strong>
+          <ul>
+            <li>Das Unternehmen muss dem Produzierenden Gewerbe angehören (WZ 2008: Abschnitte B, C, D, E oder F)</li>
+            <li>Der Strom muss zu betrieblichen Zwecken verwendet werden</li>
+            <li>Der Antrag ist beim zuständigen Hauptzollamt (HZA) zu stellen</li>
+          </ul>
+          <strong>Antragstellung:</strong> Zoll-Formular 1450 (verfügbar unter <a href="https://www.zoll.de" target="_blank">www.zoll.de</a>)
+          <div class="law-block">Rechtsgrundlage: §9b Stromsteuergesetz (StromStG) i.V.m. §2 Nr. 3 StromStG · Zuständig: Hauptzollamt</div>
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Was bedeutet §19 StromNEV – Individuelle Netzentgelte? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          §19 der Stromnetzentgeltverordnung (StromNEV) ermöglicht Großverbrauchern unter bestimmten Bedingungen erheblich reduzierte Netzentgelte.<br><br>
+          <strong>Voraussetzungen:</strong>
+          <ul>
+            <li><strong>§19 Abs. 2 Satz 1:</strong> Mindestens 7.000 Volllaststunden pro Jahr UND Jahresverbrauch über 10 GWh</li>
+            <li><strong>§19 Abs. 2 Satz 2:</strong> Atypische Netznutzung (Verbrauch außerhalb der Hochlastzeiten)</li>
+            <li>Nachweis durch Lastgangmessung (RLM-Zähler) erforderlich</li>
+          </ul>
+          Die genauen Bedingungen sind mit dem jeweiligen Netzbetreiber zu klären.
+          <div class="law-block">Rechtsgrundlage: §19 Stromnetzentgeltverordnung (StromNEV) · Antrag beim: Netzbetreiber (VNB/ÜNB)</div>
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Wie wird der CO₂-Fußabdruck berechnet? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Der CO₂-Fußabdruck entspricht dem <strong>Scope-2-Standard</strong> gemäß GHG Protocol Corporate Standard (locationbased).<br><br>
+          <strong>Berechnungsgrundlage:</strong>
+          <ul>
+            <li>Emissionsfaktor: Deutschen Strommix 2025 (Quelle: Umweltbundesamt / IFEU)</li>
+            <li>Formel: Jahresverbrauch (kWh) × Emissionsfaktor (g CO₂-Äq./kWh) = CO₂-Emissionen (kg)</li>
+            <li>BEHG-Kosten basieren auf dem aktuellen CO₂-Preis gemäß Brennstoffemissionshandelsgesetz</li>
+          </ul>
+          <strong>Hinweis:</strong> Der Bericht ersetzt keine zertifizierte Nachhaltigkeitsprüfung durch einen akkreditierten Prüfer.
+          <div class="law-block">Quellen: UBA · IFEU · GHG Protocol Corporate Standard · EU CSRD 2022/2464 · ESRS E1 · BEHG</div>
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Was ist der Compliance-Score und wie wird er berechnet? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Der Compliance-Score bewertet die energierechtliche Konformität Ihres Unternehmens anhand folgender Dimensionen:
+          <ul>
+            <li><strong>EDL-G Audit-Pflicht:</strong> Prüfung gemäß §8 EDL-G (Pflicht ab 250 Mitarbeiter oder 50 Mio. € Umsatz)</li>
+            <li><strong>ISO 50001:</strong> Energiemanagementsystem-Anforderungen</li>
+            <li><strong>DIN EN 16247-1:</strong> Energieaudits – Allgemeine Anforderungen</li>
+            <li><strong>§9b StromStG:</strong> Nutzungsgrad der verfügbaren Steuerentlastung</li>
+            <li><strong>§19 StromNEV:</strong> Nutzungsgrad der verfügbaren Netzentgeltvergünstigung</li>
+          </ul>
+          <div class="law-block">Rechtsgrundlagen: §8 EDL-G · ISO 50001:2018 · DIN EN 16247-1 · EnWG · StromNEV · StromStG</div>
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Woher stammen die Live-Marktpreise im Bericht? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Die Strompreise stammen aus offiziellen deutschen Behördenquellen:
+          <ul>
+            <li><strong>SMARD:</strong> Bundesnetzagentur (<a href="https://www.smard.de" target="_blank">smard.de</a>) – Day-Ahead-Preise der EPEX SPOT</li>
+            <li><strong>ÜNB:</strong> 50Hertz, Amprion, TenneT, TransnetBW – für Umlagen und Netzentgelte</li>
+            <li><strong>Bundesnetzagentur:</strong> Regulierte Netzentgelte und Konzessionsabgaben</li>
+          </ul>
+          Die Preise entsprechen dem Zeitpunkt der Berichterstellung. Tagesaktuelle Preise unter <a href="https://www.smard.de" target="_blank">www.smard.de</a>.
+          <div class="law-block">Quellen: SMARD (BNetzA) · 50Hertz · Amprion · TenneT · TransnetBW · BDEW-Statistik</div>
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Was ist die SHA-256 Prüfnummer im Bericht? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Jeder Bericht enthält eine eindeutige <strong>SHA-256-Prüfnummer</strong> (Hashwert), die als digitaler Fingerabdruck dient:
+          <ul>
+            <li>Sie beweist, dass der Bericht nicht nachträglich verändert wurde</li>
+            <li>Sie ermöglicht die eindeutige Identifikation des Berichts</li>
+            <li>Sie kann als Nachweis bei Behörden oder Wirtschaftsprüfern verwendet werden</li>
+          </ul>
+          SHA-256 ist ein kryptographischer Hash-Algorithmus, standardisiert von der US-amerikanischen NIST und weltweit eingesetzt.
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Wie wird mein Netzbetreiber ermittelt? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          Die Ermittlung erfolgt anhand Ihrer Postleitzahl (PLZ) über eine strukturierte Datenbank der deutschen Verteilnetzbetreiber, basierend auf Daten der Bundesnetzagentur. Deutschland hat ca. 900 Verteilnetzbetreiber. Der ermittelte Netzbetreiber ist relevant für:
+          <ul>
+            <li>Netzentgelt-Verhandlungen (§19 StromNEV)</li>
+            <li>Anmeldung von Erzeugungsanlagen (EEG)</li>
+            <li>Messstellenbetrieb (MsbG §20)</li>
+          </ul>
+          <div class="law-block">Quelle: Bundesnetzagentur – Marktstammdatenregister (MaStR) · Stand: 2025</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 4: Juridisch -->
+  <div class="section-title">4 · Rechtliche Hinweise & Haftungsausschluss</div>
+
+  <div class="warning-box">
+    <strong>⚠️ Wichtiger Hinweis zur Rechtsverbindlichkeit</strong>
+    StromAudit Pro ist ein automatisch generierter Pre-Audit-Bericht auf Basis öffentlich zugänglicher Behördendaten. Er ersetzt keine zertifizierte Energiefachprüfung, keine Rechtsberatung und keine steuerliche Beratung. Für rechtsverbindliche Entscheidungen ist ein zugelassener Fachexperte hinzuzuziehen.
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Ist der Bericht rechtsverbindlich für Behörden oder Wirtschaftsprüfer? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          <strong>Nein.</strong> StromAudit Pro ist ein automatisch generierter Pre-Audit-Bericht und kein zertifiziertes Energieaudit im Sinne von §8 EDL-G oder DIN EN 16247-1.<br><br>
+          Der Bericht eignet sich als:
+          <ul>
+            <li>Erste Orientierung und Vorbereitung für ein formelles Energieaudit</li>
+            <li>Grundlage für Gespräche mit Energieberatern oder dem Netzbetreiber</li>
+            <li>Interne Dokumentation für ESG- und Nachhaltigkeitsberichte</li>
+            <li>Vorbereitung auf CSRD/ESRS-E1-Berichtspflichten</li>
+          </ul>
+          Für ein rechtsverbindliches Audit gemäß §8 EDL-G ist ein zugelassener Energieberater (§21 EDL-G) erforderlich.
+          <div class="law-block">Referenz: §8 EDL-G · §21 EDL-G · DIN EN 16247-1:2012 · ISO 50001:2018</div>
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Welche Rechtsgrundlagen liegen dem Bericht zugrunde? <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          StromAudit Pro verarbeitet und referenziert folgende Rechtsgrundlagen und Normen:
+          <div class="law-block">
+            EnWG – Energiewirtschaftsgesetz<br>
+            StromStG §9b – Stromsteuergesetz (Steuerentlastung Produzierendes Gewerbe)<br>
+            StromNEV §19 – Stromnetzentgeltverordnung (Individuelle Netzentgelte)<br>
+            KWKG – Kraft-Wärme-Kopplungsgesetz<br>
+            EEG 2023 – Erneuerbare-Energien-Gesetz<br>
+            KAV – Konzessionsabgabenverordnung<br>
+            UStG §12 – Umsatzsteuergesetz<br>
+            MsbG §20 – Messstellenbetriebsgesetz<br>
+            §8 EDL-G – Energiedienstleistungsgesetz<br>
+            ISO 50001:2018 – Energiemanagementsysteme<br>
+            DIN EN 16247-1 – Energieaudits<br>
+            EU CSRD 2022/2464 – Corporate Sustainability Reporting Directive<br>
+            ESRS E1 – European Sustainability Reporting Standards (Klimawandel)<br>
+            GHG Protocol Corporate Standard<br>
+            EU Taxonomy-Verordnung 2020/852<br>
+            BEHG – Brennstoffemissionshandelsgesetz
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-question">Wie werden meine Daten verarbeitet? (DSGVO) <span class="faq-arrow">▼</span></div>
+        <div class="faq-answer">
+          StromAudit Pro verarbeitet Ihre eingegebenen Betriebsdaten ausschließlich zur einmaligen Berichterstellung.<br><br>
+          <strong>Datenschutz-Grundsätze:</strong>
+          <ul>
+            <li>Keine dauerhafte Speicherung von Betriebsdaten auf unseren Servern</li>
+            <li>Keine Weitergabe an Dritte</li>
+            <li>Keine Nutzung zu Werbezwecken</li>
+            <li>Verarbeitung gemäß DSGVO Art. 6 Abs. 1 lit. b (Vertragserfüllung)</li>
+          </ul>
+          Zahlungsdaten werden ausschließlich von Digistore24 verarbeitet. StromAudit Pro hat zu keinem Zeitpunkt Zugriff auf Ihre Zahlungsinformationen.
+          <div class="law-block">Rechtsgrundlage: DSGVO Art. 6 · BDSG · Datenschutzhinweise von Digistore24 gelten für den Kaufprozess</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 5: Contact -->
+  <div class="section-title">5 · Noch Fragen?</div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon">💳</div>
+      <div>
+        <h2>Digistore24 – Ihr Ansprechpartner für alle Kaufanfragen</h2>
+        <p>Zahlung · Rechnung · Rückerstattung · Zugangsprobleme</p>
+      </div>
+    </div>
+    <div class="card-body" style="padding: 24px;">
+      <p style="font-size:13px; color: var(--muted); line-height:1.7; margin-bottom: 16px;">
+        StromAudit Pro wird ausschließlich über <strong style="color:var(--navy)">Digistore24</strong> vertrieben. Alle kaufbezogenen Anfragen werden direkt und ausschließlich von Digistore24 bearbeitet. Bitte halten Sie Ihre Bestellnummer bereit.
+      </p>
+      <a href="https://www.digistore24.com/de/kontakt" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); color:#fff; padding: 13px 28px; border-radius:10px; font-weight:700; font-size:14px; text-decoration:none;">
+        → Digistore24 Support kontaktieren
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  StromAudit Pro · Deutsche Energie-Compliance &amp; ESG Pre-Audit Engine v3.5<br>
+  Datenquellen: SMARD – Bundesnetzagentur · ÜNB · UBA · IFEU · BNetzA · Marktstammdatenregister<br>
+  <a href="https://www.smard.de" target="_blank">smard.de</a> ·
+  <a href="https://www.bundesnetzagentur.de" target="_blank">bundesnetzagentur.de</a> ·
+  <a href="https://www.umweltbundesamt.de" target="_blank">umweltbundesamt.de</a> ·
+  <a href="https://www.zoll.de" target="_blank">zoll.de</a><br>
+  <a href="/">← Zurück zur Startseite</a>
+</div>
+
+<script>
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>
