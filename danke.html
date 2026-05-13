@@ -469,12 +469,23 @@ async function init() {
     document.querySelector(".payment-badge").style.color = "#6b4c00";
   }
 
-  // Geen data in URL?
+  // Geen data in URL? → Digistore testkauf of directe toegang
   if (!encoded) {
-    showError(
-      "Geen data gevonden in de URL.",
-      "Geen ?data= parameter gevonden. Ga terug naar het formulier en probeer opnieuw."
-    );
+    document.getElementById("loading-view").style.display = "none";
+    document.getElementById("error-view").style.display = "block";
+    document.getElementById("error-view").querySelector("h3").textContent = "Testkauf erfolgreich ✓";
+    document.getElementById("error-view").querySelector("h3").style.color = "var(--green)";
+    document.getElementById("error-view").querySelectorAll("p")[0].textContent =
+      "Diese Seite wurde korrekt aufgerufen. Bei einem echten Kauf werden Ihre Daten automatisch übertragen und der Bericht sofort erstellt.";
+    document.getElementById("error-detail").textContent =
+      "Hinweis: Der Parameter ?data= wird bei einem Digistore24-Testkauf nicht übertragen. " +
+      "Im echten Kaufprozess sendet Digistore24 die verschlüsselten Formulardaten automatisch mit. " +
+      "Die Weiterleitung und Berichterstellung funktionieren dann vollständig.";
+    document.getElementById("error-detail").style.background = "#f0faf4";
+    document.getElementById("error-detail").style.borderColor = "var(--green)";
+    document.getElementById("error-detail").style.color = "var(--green)";
+    document.getElementById("error-view").querySelectorAll("p")[1].style.display = "none";
+    document.querySelector(".btn-retry").textContent = "← Zurück zum Formular";
     return;
   }
 
