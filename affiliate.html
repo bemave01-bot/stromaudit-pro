@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Affiliate-Partner – StromAudit Pro</title>
+<meta name="description" content="Alles was Sie als Affiliate-Partner für StromAudit Pro benötigen: Links, Werbemittel, FAQ und Texte.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #0a2540;
+  --blue:   #1a4a7a;
+  --sky:    #7ecef4;
+  --green:  #1a7a3c;
+  --mint:   #7eeaa0;
+  --gold:   #f0a500;
+  --red:    #c0392b;
+  --bg:     #f0f2f7;
+  --white:  #ffffff;
+  --border: #dde3f0;
+  --text:   #1a1a1a;
+  --muted:  #6b7280;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  color: #fff;
+  padding: 52px 24px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 50%, rgba(126,206,244,.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.header-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  color: var(--sky);
+}
+.header h1 {
+  font-size: clamp(22px, 5vw, 36px);
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+.header h1 span { color: var(--mint); }
+.header-sub {
+  font-size: 15px;
+  opacity: .8;
+  max-width: 540px;
+  margin: 0 auto 28px;
+  line-height: 1.65;
+}
+
+/* Commission highlight */
+.commission-bar {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.comm-block {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12px;
+  padding: 16px 28px;
+  text-align: center;
+}
+.comm-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--mint);
+  line-height: 1;
+  font-family: 'DM Mono', monospace;
+}
+.comm-label {
+  font-size: 12px;
+  opacity: .7;
+  margin-top: 4px;
+}
+
+/* ── Nav tabs ── */
+.nav-tabs {
+  background: var(--navy);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  overflow-x: auto;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.nav-tab {
+  color: rgba(255,255,255,.55);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 14px 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s;
+  text-decoration: none;
+}
+.nav-tab:hover { color: rgba(255,255,255,.85); }
+.nav-tab.active { color: var(--mint); border-bottom-color: var(--mint); }
+
+/* ── Container ── */
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 40px 16px 80px;
+}
+
+/* ── Section ── */
+.section {
+  margin-bottom: 48px;
+}
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+.section-title {
+  font-size: clamp(18px, 4vw, 22px);
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+  letter-spacing: -.01em;
+}
+.section-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  max-width: 620px;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 2px 20px rgba(10,37,64,.07), 0 0 0 1px var(--border);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.card-header {
+  background: linear-gradient(135deg, #f7f9ff 0%, #eef2fb 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-header-icon {
+  width: 38px; height: 38px;
+  background: var(--navy);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.card-header h3 { font-size: 14px; font-weight: 700; color: var(--navy); }
+.card-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.card-body { padding: 24px; }
+
+/* ── Steps ── */
+.steps-list {
+  counter-reset: step;
+  list-style: none;
+}
+.steps-list li {
+  counter-increment: step;
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.steps-list li:last-child { border-bottom: none; }
+.step-num {
+  width: 32px; height: 32px;
+  background: var(--navy);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  content: counter(step);
+}
+.step-content strong {
+  display: block;
+  font-size: 14px;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.step-content span {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.step-content code {
+  background: #f0f2f7;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--navy);
+  word-break: break-all;
+}
+
+/* ── Link box ── */
+.link-box {
+  background: #f0f4ff;
+  border: 1.5px solid #c5d5f5;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+.link-box-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--blue);
+  margin-bottom: 6px;
+}
+.link-box-url {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--navy);
+  word-break: break-all;
+  line-height: 1.5;
+}
+.link-box-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ── KPI grid ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: #f7f9ff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 16px;
+  text-align: center;
+}
+.kpi-card .kv {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--navy);
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.kpi-card .kv.green { color: var(--green); }
+.kpi-card .kv.gold { color: var(--gold); }
+.kpi-card .kl {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ── Copy box ── */
+.copy-box {
+  background: #f7f9ff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.copy-box-header {
+  background: #eef2fb;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.copy-box-header span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--navy);
+}
+.copy-btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.copy-btn:hover { opacity: .8; }
+.copy-btn.copied { background: var(--green); }
+.copy-box-content {
+  padding: 16px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── FAQ ── */
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-item:last-child { border-bottom: none; }
+.faq-q {
+  padding: 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--navy);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+}
+.faq-q::after {
+  content: '+';
+  font-size: 20px;
+  color: var(--blue);
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+.faq-item.open .faq-q::after { transform: rotate(45deg); }
+.faq-a {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .3s ease, padding .3s;
+}
+.faq-item.open .faq-a {
+  max-height: 400px;
+  padding-bottom: 16px;
+}
+
+/* ── Info box ── */
+.info-box {
+  background: #e3f0ff;
+  border-left: 3px solid var(--blue);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--navy);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.info-box strong { display: block; margin-bottom: 4px; font-size: 13px; }
+
+.warn-box {
+  background: #fffbe6;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: #6b4c00;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+/* ── Checklist ── */
+.checklist { list-style: none; }
+.checklist li {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.checklist li:last-child { border-bottom: none; }
+.check-dot {
+  width: 20px; height: 20px;
+  background: var(--green);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Screenshot placeholder ── */
+.screenshot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.screenshot-card {
+  background: #f7f9ff;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 32px 20px;
+  text-align: center;
+}
+.screenshot-card .sc-icon { font-size: 36px; margin-bottom: 10px; }
+.screenshot-card strong { font-size: 13px; color: var(--navy); display: block; margin-bottom: 6px; }
+.screenshot-card span { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.screenshot-card .sc-badge {
+  display: inline-block;
+  background: var(--border);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* ── Target group tags ── */
+.target-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.target-tag {
+  background: #f0f4ff;
+  border: 1.5px solid #c5d5f5;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--blue);
+}
+
+/* ── Contact box ── */
+.contact-box {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  color: #fff;
+}
+.contact-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.contact-box p { font-size: 13px; opacity: .75; margin-bottom: 20px; line-height: 1.6; }
+.btn-contact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--mint);
+  color: var(--navy);
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity .15s;
+}
+.btn-contact:hover { opacity: .85; }
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+  border-top: 1px solid var(--border);
+  background: var(--white);
+}
+.footer a { color: var(--blue); text-decoration: none; }
+
+@media (max-width: 520px) {
+  .commission-bar { gap: 12px; }
+  .comm-block { padding: 12px 18px; }
+  .comm-value { font-size: 26px; }
+  .card-body { padding: 16px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="header-badge">Affiliate-Partner Bereich · StromAudit Pro</div>
+  <h1>Willkommen im<br><span>Partner-Bereich</span></h1>
+  <p class="header-sub">
+    Alles was Sie brauchen, um StromAudit Pro erfolgreich zu promoten – Links, Texte, Werbemittel und Antworten auf alle Fragen.
+  </p>
+  <div class="commission-bar">
+    <div class="comm-block">
+      <div class="comm-value">50%</div>
+      <div class="comm-label">Provision pro Verkauf</div>
+    </div>
+    <div class="comm-block">
+      <div class="comm-value">~€24</div>
+      <div class="comm-label">Netto pro Verkauf</div>
+    </div>
+    <div class="comm-block">
+      <div class="comm-value">€57</div>
+      <div class="comm-label">Produktpreis inkl. MwSt.</div>
+    </div>
+    <div class="comm-block">
+      <div class="comm-value">14 Tage</div>
+      <div class="comm-label">Cookie-Laufzeit</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── NAV ── -->
+<div class="nav-tabs">
+  <a href="#start" class="nav-tab active">Start</a>
+  <a href="#link" class="nav-tab">Ihr Affiliate-Link</a>
+  <a href="#produkt" class="nav-tab">Das Produkt</a>
+  <a href="#texte" class="nav-tab">Werbetexte</a>
+  <a href="#zielgruppe" class="nav-tab">Zielgruppe</a>
+  <a href="#faq" class="nav-tab">FAQ</a>
+  <a href="#kontakt" class="nav-tab">Kontakt</a>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="container">
+
+  <!-- ── START ── -->
+  <div class="section" id="start">
+    <div class="section-eyebrow">Schnellstart</div>
+    <h2 class="section-title">In 3 Schritten zur ersten Provision</h2>
+    <p class="section-desc">Als Affiliate-Partner von StromAudit Pro verdienen Sie 50% Provision auf jeden Verkauf – ohne Support, ohne Lagerware, ohne Aufwand.</p>
+
+    <div class="card">
+      <div class="card-body">
+        <ol class="steps-list">
+          <li>
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <strong>Digistore24-Account erstellen (falls noch nicht vorhanden)</strong>
+              <span>Kostenlos unter <code>digistore24.com</code> registrieren. Ihre Provisionen werden automatisch dort gutgeschrieben und per SEPA ausgezahlt.</span>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <strong>Ihren persönlichen Affiliate-Link holen</strong>
+              <span>In Digistore24 einloggen → Marktplatz → "StromAudit Pro" suchen → "Jetzt bewerben" klicken → Ihren persönlichen Promolink kopieren. Oder direkt über den Einladungslink unten auf dieser Seite.</span>
+            </div>
+          </li>
+          <li>
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <strong>Link teilen und Provisionen verdienen</strong>
+              <span>Teilen Sie Ihren Link auf Ihrem Blog, Newsletter, LinkedIn, YouTube oder Social Media. Jeder Kauf über Ihren Link bringt Ihnen automatisch ~€24 Provision.</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>Direkter Einladungslink</strong>
+      Nutzen Sie diesen Link, um sich direkt als Partner für StromAudit Pro in Digistore24 anzumelden:<br><br>
+      <code style="font-family:'DM Mono',monospace;font-size:12px;background:#fff;padding:4px 8px;border-radius:4px;border:1px solid #c5d5f5;">https://www.digistore24.com/product/690561</code><br><br>
+      Nach Anmeldung erhalten Sie Ihren persönlichen Promolink mit Ihrer Digistore24-ID.
+    </div>
+  </div>
+
+  <!-- ── AFFILIATE LINK ── -->
+  <div class="section" id="link">
+    <div class="section-eyebrow">Ihr persönlicher Link</div>
+    <h2 class="section-title">So funktioniert Ihr Affiliate-Link</h2>
+    <p class="section-desc">Jeder Affiliate erhält einen eigenen Tracking-Link über Digistore24. Alle Verkäufe über Ihren Link werden automatisch Ihrem Account gutgeschrieben.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">🔗</div>
+        <div>
+          <h3>Ihr persönlicher Promolink</h3>
+          <p>Ersetzen Sie IHRE-ID mit Ihrer Digistore24-Affiliate-ID</p>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div class="link-box">
+          <div class="link-box-label">Direktlink zur Sales Page</div>
+          <div class="link-box-url">https://mellow-praline-9633af.netlify.app/?aff=IHRE-ID</div>
+          <div class="link-box-desc">Besucher landen direkt auf der StromAudit Pro Verkaufsseite. Empfohlen für Social Media, Newsletter und Blogs.</div>
+        </div>
+
+        <div class="link-box">
+          <div class="link-box-label">Direktlink zum Bestellformular</div>
+          <div class="link-box-url">https://www.checkout-ds24.com/product/690561?affiliate=IHRE-ID</div>
+          <div class="link-box-desc">Besucher landen direkt auf dem Bestellformular. Ideal für sehr kaufbereite Zielgruppen.</div>
+        </div>
+
+        <div class="warn-box">
+          Ihre Digistore24-Affiliate-ID finden Sie nach dem Einloggen unter: Marktplatz → StromAudit Pro → Promolink kopieren. Die ID ist eine Kombination aus Buchstaben und Zahlen, z.B. "max123".
+        </div>
+
+        <div class="info-box">
+          <strong>Cookie-Laufzeit: 14 Tage</strong>
+          Wenn ein Besucher auf Ihren Link klickt und innerhalb von 14 Tagen kauft, erhalten Sie die Provision – auch wenn er die Seite zwischenzeitlich verlassen hat.
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRODUKT ── -->
+  <div class="section" id="produkt">
+    <div class="section-eyebrow">Das Produkt</div>
+    <h2 class="section-title">Was kauft Ihr Kunde genau?</h2>
+    <p class="section-desc">StromAudit Pro ist ein automatisch generierter, 10-seitiger PDF-Energiebericht für deutsche Unternehmen – sofort nach Zahlung verfügbar.</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kv">€57</div>
+        <div class="kl">Produktpreis inkl. 19% MwSt.</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kv green">~€24</div>
+        <div class="kl">Ihre Netto-Provision pro Verkauf</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kv">10 Sek.</div>
+        <div class="kl">Ø Berechnungszeit</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kv gold">10</div>
+        <div class="kl">Seiten vollständiger PDF-Bericht</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">📄</div>
+        <div>
+          <h3>Inhalt des Berichts</h3>
+          <p>Das bekommt Ihr Kunde nach dem Kauf</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="checklist">
+          <li><div class="check-dot">✓</div><span>Vollständige Stromkostenaufschlüsselung (Beschaffung, Netzentgelte, Umlagen, MwSt.)</span></li>
+          <li><div class="check-dot">✓</div><span>Konkrete Einsparpotenziale nach §9b StromStG & §19 StromNEV</span></li>
+          <li><div class="check-dot">✓</div><span>ESG-Dokumentation nach EU CSRD / ESRS E1 – sofort verwendbar</span></li>
+          <li><div class="check-dot">✓</div><span>CO2-Fußabdruck (Scope 2) inkl. BEHG-Kosten 2026</span></li>
+          <li><div class="check-dot">✓</div><span>Compliance-Check gegen 16 deutsche Rechtsgrundlagen (EDL-G, ISO 50001 u.a.)</span></li>
+          <li><div class="check-dot">✓</div><span>Live-Marktpreise (SMARD – Bundesnetzagentur, Day-Ahead)</span></li>
+          <li><div class="check-dot">✓</div><span>Netzbetreiber-Ermittlung per PLZ inkl. regionaler Netzentgelte</span></li>
+          <li><div class="check-dot">✓</div><span>SHA-256 Prüfnummer – manipulationssicher und revisionsfest</span></li>
+          <li><div class="check-dot">✓</div><span>Sofort verfügbar – kein Termin, kein Berater, keine Wartezeit</span></li>
+          <li><div class="check-dot">✓</div><span>14 Tage Widerrufsrecht – sichere Kaufentscheidung</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">🖼️</div>
+        <div>
+          <h3>Werbemittel / Screenshots</h3>
+          <p>Verwenden Sie diese Bilder frei für Ihre Werbung</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="screenshot-grid">
+          <div class="screenshot-card">
+            <div class="sc-icon">🖥️</div>
+            <strong>Sales Page – Desktop</strong>
+            <span>Vollständige Verkaufsseite mit Formular und Preisübersicht</span>
+            <div class="sc-badge">Folgt in Kürze</div>
+          </div>
+          <div class="screenshot-card">
+            <div class="sc-icon">📱</div>
+            <strong>Sales Page – Mobil</strong>
+            <span>Mobile Ansicht der Verkaufsseite für Social Media</span>
+            <div class="sc-badge">Folgt in Kürze</div>
+          </div>
+          <div class="screenshot-card">
+            <div class="sc-icon">📄</div>
+            <strong>Beispiel-Bericht (PDF)</strong>
+            <span>Erste Seite des generierten Energieberichts mit KPIs</span>
+            <div class="sc-badge">Folgt in Kürze</div>
+          </div>
+          <div class="screenshot-card">
+            <div class="sc-icon">✅</div>
+            <strong>Bestätigungsseite</strong>
+            <span>Seite nach erfolgreicher Zahlung mit Bericht-Download</span>
+            <div class="sc-badge">Folgt in Kürze</div>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>Hinweis</strong>
+          Screenshots und Werbemittel werden in Kürze hier bereitgestellt. Bei Fragen wenden Sie sich bitte an den Support. Sie dürfen die Sales Page (https://mellow-praline-9633af.netlify.app/) jederzeit selbst screenshotten und für Ihre Werbung verwenden.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WERBETEXTE ── -->
+  <div class="section" id="texte">
+    <div class="section-eyebrow">Werbetexte</div>
+    <h2 class="section-title">Fertige Texte – einfach kopieren & anpassen</h2>
+    <p class="section-desc">Ersetzen Sie überall [IHR-LINK] mit Ihrem persönlichen Affiliate-Promolink aus Digistore24.</p>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">💼</div>
+        <div>
+          <h3>LinkedIn-Post</h3>
+          <p>Ideal für Business-Netzwerke und Entscheider</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="copy-box">
+          <div class="copy-box-header">
+            <span>LinkedIn-Post (deutsch)</span>
+            <button class="copy-btn" onclick="copyText(this, 'linkedin-de')">Kopieren</button>
+          </div>
+          <div class="copy-box-content" id="linkedin-de">Wissen Sie, wie viel Ihr Unternehmen fuer Strom zu viel zahlt?
+
+Die meisten deutschen Unternehmen verschenken jaehrlich Hunderte Euro durch nicht genutzte Steuererstattungen und Netzentgeltvergueenstigungen - ohne es zu wissen.
+
+StromAudit Pro berechnet Ihre individuellen Energiekosten, Einsparpotenziale und ESG-Kennzahlen in wenigen Sekunden - vollstaendig als PDF, sofort verfuegbar.
+
+Das Ergebnis: eine vollstaendige Kostenaufschluesselung, konkrete Einsparmassnahmen nach §9b StromStG und §19 StromNEV, sowie eine CSRD-konforme ESG-Dokumentation.
+
+Einmalig €57 - kein Abo, kein Berater, keine Wartezeit.
+
+Jetzt Energiebericht erstellen: [IHR-LINK]
+
+#Energie #ESG #CSRD #KMU #Nachhaltigkeit #Energiekosten</div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-box-header">
+            <span>LinkedIn-Post (kurz)</span>
+            <button class="copy-btn" onclick="copyText(this, 'linkedin-kurz')">Kopieren</button>
+          </div>
+          <div class="copy-box-content" id="linkedin-kurz">Ein Energieberater kostet ab €1.500 und kommt erst in Wochen.
+
+StromAudit Pro liefert dasselbe Grundgeruest in 10 Sekunden - als vollstaendigen PDF-Bericht, inkl. Einsparpotenzial, ESG-Dokumentation und Compliance-Check.
+
+Einmalig €57. Sofort verfuegbar.
+
+Bericht erstellen: [IHR-LINK]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">📧</div>
+        <div>
+          <h3>Newsletter / E-Mail</h3>
+          <p>Fuer Ihre bestehende E-Mail-Liste</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="copy-box">
+          <div class="copy-box-header">
+            <span>Newsletter-Text</span>
+            <button class="copy-btn" onclick="copyText(this, 'newsletter')">Kopieren</button>
+          </div>
+          <div class="copy-box-content" id="newsletter">Betreff: Ihr Energiebericht in 10 Sekunden - fuer €57 statt €1.500
+
+Hallo [Name],
+
+kennen Sie Ihre echten Stromkosten? Nicht nur die Gesamtrechnung - sondern aufgeschluesselt nach Beschaffung, Netzentgelten, Umlagen und Steuern?
+
+Die meisten Unternehmen kennen sie nicht. Und zahlen deshalb mehr als noetig.
+
+StromAudit Pro aendert das: Sie geben Ihren Jahresverbrauch, Ihre PLZ und Ihre Spitzenlast ein - und erhalten in wenigen Sekunden einen vollstaendigen 10-seitigen PDF-Bericht mit:
+
+- Vollstaendiger Kostenaufschluesselung
+- Konkreten Einsparpotenzialen (§9b StromStG, §19 StromNEV)
+- ESG-Dokumentation (CSRD/ESRS E1-konform)
+- Compliance-Check gegen 16 Rechtsgrundlagen
+- Tagesaktuellen Marktpreisen (SMARD - Bundesnetzagentur)
+
+Preis: einmalig €57 inkl. MwSt. Kein Abo, keine Folgekosten.
+
+Jetzt Bericht erstellen: [IHR-LINK]
+
+Mit freundlichen Gruessen,
+[Ihr Name]</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">📱</div>
+        <div>
+          <h3>Social Media (kurz)</h3>
+          <p>Fuer Instagram, Facebook, Twitter/X</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="copy-box">
+          <div class="copy-box-header">
+            <span>Kurz-Post (max. 280 Zeichen)</span>
+            <button class="copy-btn" onclick="copyText(this, 'social-kurz')">Kopieren</button>
+          </div>
+          <div class="copy-box-content" id="social-kurz">Energieberater: €1.500+, Wochen Wartezeit.
+StromAudit Pro: €57, 10 Sekunden, sofort als PDF.
+
+Vollstaendige Kostenanalyse, Einsparpotenzial, ESG-Bericht.
+
+Jetzt: [IHR-LINK]
+
+#Energie #KMU #ESG</div>
+        </div>
+
+        <div class="copy-box">
+          <div class="copy-box-header">
+            <span>Instagram-Caption (laenger)</span>
+            <button class="copy-btn" onclick="copyText(this, 'instagram')">Kopieren</button>
+          </div>
+          <div class="copy-box-content" id="instagram">Wussten Sie, dass viele Unternehmen jaehrlich hunderte Euro Stromsteuer-Erstattung verschenken?
+
+StromAudit Pro berechnet automatisch:
+- Ihre genauen Energiekosten
+- Einsparpotenziale nach deutschem Recht
+- Ihren CO2-Fussabdruck (Scope 2)
+- ESG-Dokumentation fuer Banken & Investoren
+
+Alles in einem 10-seitigen PDF-Bericht. In 10 Sekunden. Fuer einmalig €57.
+
+Link in Bio oder direkt: [IHR-LINK]
+
+#Energiekosten #Nachhaltigkeit #ESG #CSRD #Mittelstand #KMU #Strom #Energiewende</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">✍️</div>
+        <div>
+          <h3>Blog-Text / Advertorial</h3>
+          <p>Fuer redaktionelle Beitraege auf Ihrer Website</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="copy-box">
+          <div class="copy-box-header">
+            <span>Blog-Einstieg (Intro-Absatz)</span>
+            <button class="copy-btn" onclick="copyText(this, 'blog')">Kopieren</button>
+          </div>
+          <div class="copy-box-content" id="blog">Die meisten deutschen Unternehmen erhalten monatlich eine Stromrechnung - aber kaum eines weiss, was darin wirklich steckt. Netzentgelte, Umlagen, Konzessionsabgaben, Stromsteuer: Was davon liesse sich reduzieren? Und wie hoch ist der CO2-Fussabdruck fuer den ESG-Bericht?
+
+StromAudit Pro beantwortet genau diese Fragen - vollautomatisch, in wenigen Sekunden und fuer einmalig €57. Das Tool analysiert Jahresverbrauch, Spitzenlast und PLZ mit tagesaktuellen Marktpreisen der Bundesnetzagentur (SMARD) und erstellt einen 10-seitigen PDF-Bericht mit vollstaendiger Kostenaufschluesselung, konkreten Einsparpotenzialen und CSRD-konformer ESG-Dokumentation.
+
+Bericht direkt erstellen: [IHR-LINK]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ZIELGRUPPE ── -->
+  <div class="section" id="zielgruppe">
+    <div class="section-eyebrow">Zielgruppe</div>
+    <h2 class="section-title">Wer kauft StromAudit Pro?</h2>
+    <p class="section-desc">StromAudit Pro richtet sich an deutsche Unternehmen, die ihre Energiekosten verstehen, optimieren oder ESG-konform dokumentieren muessen.</p>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="section-eyebrow" style="margin-bottom:8px;">Perfekte Kaeufer</div>
+        <div class="target-tags">
+          <span class="target-tag">Handwerksbetriebe</span>
+          <span class="target-tag">Produktionsunternehmen (KMU)</span>
+          <span class="target-tag">Buerogebaeude & Verwalter</span>
+          <span class="target-tag">Einzelhandel & Gastro</span>
+          <span class="target-tag">Logistik & Lager</span>
+          <span class="target-tag">Landwirtschaft</span>
+          <span class="target-tag">Rechtsanwaelte & Kanzleien</span>
+          <span class="target-tag">Arztpraxen & Kliniken</span>
+          <span class="target-tag">Steuerberater fuer Mandanten</span>
+          <span class="target-tag">Energiemanager in KMU</span>
+        </div>
+
+        <div style="margin-top:20px;" class="section-eyebrow" style="margin-bottom:8px;">Besonders geeignet fuer Affiliates aus diesen Bereichen</div>
+        <div class="target-tags" style="margin-top:8px;">
+          <span class="target-tag">Energie & Nachhaltigkeit Blogs</span>
+          <span class="target-tag">KMU & Unternehmerfuehrung</span>
+          <span class="target-tag">ESG & CSRD Newsletter</span>
+          <span class="target-tag">Steuer & Finanzen</span>
+          <span class="target-tag">LinkedIn Business Creator</span>
+          <span class="target-tag">YouTube Kanal Unternehmertum</span>
+          <span class="target-tag">Podcast Wirtschaft & Recht</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-icon">💡</div>
+        <div>
+          <h3>Kaufmotivation – warum kaufen sie?</h3>
+          <p>Das hilft Ihnen beim richtigen Ansprechen der Zielgruppe</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="checklist">
+          <li><div class="check-dot">1</div><span><strong>ESG-Pflicht:</strong> Unternehmen muessen durch CSRD ab 2025 ihre CO2-Emissionen dokumentieren. StromAudit Pro liefert den Scope-2-Nachweis sofort.</span></li>
+          <li><div class="check-dot">2</div><span><strong>Steigende Energiekosten:</strong> Jedes Unternehmen sucht Einsparpotenziale. §9b StromStG und §19 StromNEV sind ungenutzte Moeglichkeiten fuer viele.</span></li>
+          <li><div class="check-dot">3</div><span><strong>Banken & Investoren:</strong> ESG-Ratings werden bei Kreditvergabe und Investitionen immer wichtiger. Der Bericht liefert die noetigen Kennzahlen.</span></li>
+          <li><div class="check-dot">4</div><span><strong>Preis-Leistung:</strong> €57 statt €1.500 fuer einen Energieberater – das ist ein einfaches Kaufargument.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FAQ ── -->
+  <div class="section" id="faq">
+    <div class="section-eyebrow">Haeufige Fragen</div>
+    <h2 class="section-title">FAQ fuer Affiliate-Partner</h2>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="faq-item open">
+          <div class="faq-q" onclick="toggleFaq(this)">Wie hoch ist meine Provision genau?</div>
+          <div class="faq-a">Sie erhalten 50% des Nettoverkaufspreises. Bei einem Produktpreis von €57 inkl. 19% MwSt. betraegt der Nettobetrag ca. €47,90. Ihre Provision betraegt davon 50% = ca. €23,95 netto pro Verkauf. Die genaue Auszahlung erfolgt ueber Digistore24 nach deren Provisionsberechnung.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Wie und wann werde ich ausgezahlt?</div>
+          <div class="faq-a">Die Auszahlung erfolgt automatisch ueber Digistore24 per SEPA-Ueberweisung auf Ihr hinterlegtes Bankkonto. Digistore24 zahlt in der Regel 4x pro Monat aus, ab einem Mindestguthaben von €50. Die genauen Auszahlungsbedingungen finden Sie in Ihrem Digistore24-Konto unter "Auszahlungen".</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Wie lange gilt mein Affiliate-Cookie?</div>
+          <div class="faq-a">Der Tracking-Cookie ist 14 Tage gueltig. Das bedeutet: Wenn jemand auf Ihren Link klickt und innerhalb von 14 Tagen kauft, erhalten Sie die Provision – auch wenn der Besucher die Seite zwischenzeitlich verlassen und spaeter direkt zurueckgekehrt ist.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Was passiert bei einer Rueckgabe?</div>
+          <div class="faq-a">StromAudit Pro hat ein 14-taegiges Widerrufsrecht. Bei einer Rueckgabe wird die Provision entsprechend storniert. Digistore24 verwaltet dies automatisch. Die Rueckgabequote ist bei digitalen Business-Tools erfahrungsgemaess sehr gering.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Darf ich eigene Werbemittel erstellen?</div>
+          <div class="faq-a">Ja, Sie duerfen eigene Werbemittel erstellen, solange diese keine falschen Versprechen enthalten und das Produkt korrekt darstellen. Screenshots der Sales Page und des Berichts duerfen Sie frei verwenden. Bitte vermeiden Sie Aussagen wie "garantiertes Einsparpotenzial" – das Produkt ist ein Pre-Audit-Dokument.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Muss ich das Produkt selbst kennen / getestet haben?</div>
+          <div class="faq-a">Es ist empfehlenswert, aber nicht Pflicht. Die Sales Page (https://mellow-praline-9633af.netlify.app/) gibt Ihnen alle Informationen. Sie koennen sich auch selbst einen Testbericht generieren lassen – wenden Sie sich dafuer an den Support.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Gibt es Einschraenkungen bei der Werbung?</div>
+          <div class="faq-a">Bitte bewerben Sie das Produkt nur auf legalen Kanaelen und halten Sie sich an die Digistore24-Affiliate-Richtlinien. Spam, irrefuehrende Werbung oder falsche Versprechen sind nicht erlaubt. Das Produkt gilt als Pre-Audit-Dokument – bitte keine Aussagen, die eine zertifizierte Energiepruefung versprechen.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Wo finde ich meinen Affiliate-Link?</div>
+          <div class="faq-a">Nach dem Einloggen bei Digistore24: Marktplatz → StromAudit Pro suchen → "Jetzt bewerben" klicken → nach Genehmigung erscheint der "Promolink kopieren" Button. Alternativ koennen Sie den Direktlink zur Sales Page mit dem GET-Parameter ?aff=IHRE-ID verwenden.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── KONTAKT ── -->
+  <div class="section" id="kontakt">
+    <div class="contact-box">
+      <h3>Fragen? Wir helfen gerne.</h3>
+      <p>Bei technischen Fragen, Problemen mit Ihrem Affiliate-Link oder Anfragen zu Werbemitteln – wenden Sie sich jederzeit an den Support.</p>
+      <a href="https://mellow-praline-9633af.netlify.app/contact.html" class="btn-contact" target="_blank">
+        Support kontaktieren →
+      </a>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  StromAudit Pro · Affiliate-Partner Bereich<br>
+  Verkaufsseite: <a href="https://mellow-praline-9633af.netlify.app/" target="_blank">mellow-praline-9633af.netlify.app</a> ·
+  Digistore24 Produkt-ID: 690561<br>
+  Alle Provisionsangaben sind Naeherungswerte. Verbindlich sind die Digistore24-Abrechnungen.
+</div>
+
+<script>
+function toggleFaq(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+function copyText(btn, id) {
+  const text = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Kopiert!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Kopieren';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+// Active nav tab on scroll
+const sections = document.querySelectorAll('.section');
+const tabs = document.querySelectorAll('.nav-tab');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  tabs.forEach(t => {
+    t.classList.toggle('active', t.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
