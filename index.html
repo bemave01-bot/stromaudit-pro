@@ -92,7 +92,31 @@ body {
   color: #ffd87a;
   max-width: 560px;
   line-height: 1.5;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
+}
+.btn-hero-cta {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--gold) 0%, #e09000 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 18px 48px;
+  border-radius: 6px;
+  text-decoration: none;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  box-shadow: 0 4px 20px rgba(240,165,0,.45);
+  transition: opacity .15s, transform .1s, box-shadow .15s;
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+}
+.btn-hero-cta:hover {
+  opacity: .92;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(240,165,0,.55);
 }
 .logo-mark {
   font-size: 44px;
@@ -797,6 +821,9 @@ input.error { border-color: var(--red); }
   <div class="header-pain">
     💡 Ein externer Energieberater kostet ab <strong>€ 1.500</strong> – StromAudit Pro liefert dasselbe Grundgerüst für <strong>einmalig € 57</strong>.
   </div>
+  <a href="#formular" class="btn-hero-cta" onclick="document.getElementById('formular').scrollIntoView({behavior:'smooth'});return false;">
+    → JETZT ENERGIEBERICHT STARTEN ←
+  </a>
 </div>
 
 <!-- ── TRUST BAR ── -->
@@ -983,7 +1010,7 @@ input.error { border-color: var(--red); }
 </div>
 
 <!-- ── MAIN (FORMULIER) ── -->
-<div class="container">
+<div class="container" id="formular">
 
   <div class="steps">
     <div class="step active" id="step1">
