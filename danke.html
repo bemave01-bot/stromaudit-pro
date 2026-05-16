@@ -381,7 +381,7 @@ body {
 // Werking:
 //   1. Lees ?data= (Base64) uit de URL
 //   2. Decodeer → JSON (formulierdata)
-//   3. Stuur naar Netlify functie → Apify actor
+//   3. Stuur naar Vercel functie → Apify actor
 //   4. Toon rapport of foutmelding
 // ═══════════════════════════════════════════════════════════════════
 
@@ -501,9 +501,9 @@ async function init() {
   // Loading animatie starten
   animateLoadingSteps();
 
-  // Netlify functie aanroepen
+  // Vercel functie aanroepen
   try {
-    const resp = await fetch("/.netlify/functions/run-actor", {
+    const resp = await fetch("/api/run-actor", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),
