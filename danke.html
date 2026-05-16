@@ -123,7 +123,7 @@ body {
 .loading-step.active .ls-dot { background: var(--navy); animation: pulse 1s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
 
-/* ── Betaal bevestiging badge ── */
+/* ── Zahlungsbestätigung badge ── */
 .payment-badge {
   display: inline-flex;
   align-items: center;
@@ -176,7 +176,7 @@ body {
 
 .result-divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 
-/* Volgende stappen */
+/* Nächste Schritte */
 .next-steps { text-align: left; }
 .next-steps h4 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 14px; }
 .next-step-item {
@@ -216,20 +216,6 @@ body {
   text-decoration: none; display: inline-block;
 }
 
-/* ── Test mode banner ── */
-.test-banner {
-  background: #fffbe6;
-  border: 1.5px solid var(--gold);
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 11px;
-  color: #6b4c00;
-  margin-bottom: 20px;
-  text-align: center;
-  font-weight: 600;
-  letter-spacing: .02em;
-}
-
 /* ── Footer ── */
 .footer { text-align: center; padding: 20px; font-size: 11px; color: var(--muted); line-height: 1.8; }
 .footer a { color: var(--blue); text-decoration: none; }
@@ -261,7 +247,7 @@ body {
 <!-- ── MAIN ── -->
 <div class="container">
 
-  <!-- Stappen indicator -->
+  <!-- Schritte-Indikator -->
   <div class="steps">
     <div class="step done" id="step1">
       <div class="step-dot">✓</div>
@@ -298,7 +284,6 @@ body {
 
     <!-- ── RESULT VIEW ── -->
     <div class="result-card" id="result-view" style="display:none">
-      <div id="test-banner-result"></div>
       <div class="result-icon">✅</div>
       <h3>Ihr Bericht ist fertig!</h3>
       <p>Ihr persönlicher StromAudit Pro Energiebericht steht zum Download bereit.<br>
@@ -310,7 +295,7 @@ body {
 
       <div class="result-meta" id="result-meta"></div>
 
-      <!-- Digistore24 verplichte melding -->
+      <!-- Digistore24 Pflichthinweis -->
       <div style="margin-top:20px;padding:14px 18px;background:#f7f9ff;border:1.5px solid var(--border);border-radius:8px;font-size:12px;color:var(--muted);text-align:left;line-height:1.7;">
         💳 <strong style="color:var(--navy);">Zahlungshinweis:</strong> Ihre Kreditkartenabrechnung zeigt eine Abbuchung von <strong>Digistore24</strong>.<br>
         📄 <strong style="color:var(--navy);">Produktlieferung:</strong> Ihr StromAudit Pro Energiebericht wird sofort nach Zahlungseingang automatisch erstellt und direkt auf dieser Seite zum Download bereitgestellt.
@@ -378,14 +363,11 @@ body {
 <script>
 // ═══════════════════════════════════════════════════════════════════
 // danke.html – StromAudit Pro
-// Werking:
-//   1. Lees ?data= (Base64) uit de URL
-//   2. Decodeer → JSON (formulierdata)
-//   3. Stuur naar Vercel functie → Apify actor
-//   4. Toon rapport of foutmelding
+// 1. ?data= (Base64) aus URL lesen
+// 2. Dekodieren → JSON (Formulardaten)
+// 3. An Vercel-Funktion → Apify Actor senden
+// 4. Bericht oder Fehlermeldung anzeigen
 // ═══════════════════════════════════════════════════════════════════
-
-// ─── Hulpfuncties ───────────────────────────────────────────────
 
 function getParam(name) {
   return new URLSearchParams(window.location.search).get(name);
@@ -421,26 +403,26 @@ function showResult(data) {
   const rv = document.getElementById("result-view");
   rv.style.display = "block";
 
-  // Rapport link
+  // Berichts-Link setzen
   document.getElementById("result-link").href = data.reportUrl;
 
-  // Meta-info blok
+  // Meta-Info-Block
   let meta = "";
   if (data.meta?.pruefnummer) {
     const k = data.meta.kalkulation;
-    meta  = `Prüfnummer:         ${data.meta.pruefnummer}\n`;
-    meta += `Erstellt:           ${data.meta.erstellt_berlin}\n`;
-    meta += `Compliance-Score:   ${data.meta.compliance_score}/100\n`;
+    meta  = `Prüfnummer:          ${data.meta.pruefnummer}\n`;
+    meta += `Erstellt:            ${data.meta.erstellt_berlin}\n`;
+    meta += `Compliance-Score:    ${data.meta.compliance_score}/100\n`;
     if (k?.brutto_gesamt_eur !== undefined) {
       meta += `Brutto-Jahreskosten: ${k.brutto_gesamt_eur.toLocaleString("de-DE",{minimumFractionDigits:2})} €\n`;
     }
     if (data.meta.einsparpotenzial_eur !== undefined) {
-      meta += `Einsparpotenzial:   ${data.meta.einsparpotenzial_eur.toLocaleString("de-DE",{minimumFractionDigits:2})} €/Jahr`;
+      meta += `Einsparpotenzial:    ${data.meta.einsparpotenzial_eur.toLocaleString("de-DE",{minimumFractionDigits:2})} €/Jahr`;
     }
   }
   document.getElementById("result-meta").textContent = meta;
 
-  // Stap 3 actief markeren
+  // Schritt 3 als erledigt markieren
   document.getElementById("step3").classList.remove("active");
   document.getElementById("step3").classList.add("done");
   document.getElementById("step3").querySelector(".step-dot").textContent = "✓";
@@ -452,44 +434,17 @@ function showError(msg, detail) {
   document.getElementById("error-detail").textContent = detail || msg;
 }
 
-// ─── Hoofdlogica ────────────────────────────────────────────────
-
 async function init() {
-  const encoded  = getParam("data");
-  const testMode = getParam("test") === "1";
+  const encoded = getParam("data");
 
-  // Testmodus banner
-  if (testMode) {
-    document.getElementById("test-banner-result").innerHTML =
-      '<div class="test-banner">🧪 TESTMODUS – geen echte betaling verwerkt</div>';
-    // Ook in loading tonen
-    document.querySelector(".payment-badge").textContent = "🧪 Testmodus actief";
-    document.querySelector(".payment-badge").style.background = "#fffbe6";
-    document.querySelector(".payment-badge").style.borderColor = "#f0a500";
-    document.querySelector(".payment-badge").style.color = "#6b4c00";
-  }
-
-  // Geen data in URL? → Digistore testkauf of directe toegang
   if (!encoded) {
-    document.getElementById("loading-view").style.display = "none";
-    document.getElementById("error-view").style.display = "block";
-    document.getElementById("error-view").querySelector("h3").textContent = "Testkauf erfolgreich ✓";
-    document.getElementById("error-view").querySelector("h3").style.color = "var(--green)";
-    document.getElementById("error-view").querySelectorAll("p")[0].textContent =
-      "Diese Seite wurde korrekt aufgerufen. Bei einem echten Kauf werden Ihre Daten automatisch übertragen und der Bericht sofort erstellt.";
-    document.getElementById("error-detail").textContent =
-      "Hinweis: Der Parameter ?data= wird bei einem Digistore24-Testkauf nicht übertragen. " +
-      "Im echten Kaufprozess sendet Digistore24 die verschlüsselten Formulardaten automatisch mit. " +
-      "Die Weiterleitung und Berichterstellung funktionieren dann vollständig.";
-    document.getElementById("error-detail").style.background = "#f0faf4";
-    document.getElementById("error-detail").style.borderColor = "var(--green)";
-    document.getElementById("error-detail").style.color = "var(--green)";
-    document.getElementById("error-view").querySelectorAll("p")[1].style.display = "none";
-    document.querySelector(".btn-retry").textContent = "← Zurück zum Formular";
+    showError(
+      "Kein Daten-Parameter gefunden.",
+      "Es wurden keine Auftragsdaten übermittelt. Bitte kehren Sie zum Formular zurück und starten Sie den Bestellvorgang erneut. Falls Sie gerade eine Bestellung abgeschlossen haben, kontaktieren Sie bitte unseren Support."
+    );
     return;
   }
 
-  // Decoderen
   let input;
   try {
     input = decodeBase64(encoded);
@@ -498,10 +453,8 @@ async function init() {
     return;
   }
 
-  // Loading animatie starten
   animateLoadingSteps();
 
-  // Vercel functie aanroepen
   try {
     const resp = await fetch("/api/run-actor", {
       method: "POST",
@@ -512,7 +465,7 @@ async function init() {
     const data = await resp.json();
 
     if (!resp.ok) {
-      throw new Error(data?.error || `Serverfout ${resp.status}`);
+      throw new Error(data?.error || `Serverfehler ${resp.status}`);
     }
 
     showResult(data);
@@ -525,7 +478,6 @@ async function init() {
   }
 }
 
-// Start zodra pagina geladen is
 window.addEventListener("DOMContentLoaded", init);
 </script>
 </body>
