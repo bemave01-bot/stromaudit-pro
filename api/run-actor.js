@@ -1,31 +1,31 @@
 // api/run-actor.js
-// Tussenlaag: ontvangt formulierdata van danke.html
-// en stuurt deze door naar Apify — API token blijft onzichtbaar.
+// Zwischenschicht: empfängt Formulardaten von danke.html
+// und leitet diese an Apify weiter — API-Token bleibt serverseitig verborgen.
 
 export default async function handler(req, res) {
 
-  // Alleen POST toegestaan
+  // Nur POST erlaubt
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ error: "Methode nicht erlaubt." });
   }
 
-  // Token en Actor ID uit Vercel omgevingsvariabelen (de kluis)
+  // Token und Actor-ID aus Vercel-Umgebungsvariablen
   const APIFY_TOKEN    = process.env.APIFY_TOKEN;
   const APIFY_ACTOR_ID = process.env.APIFY_ACTOR_ID;
 
   if (!APIFY_TOKEN || !APIFY_ACTOR_ID) {
-    return res.status(500).json({ error: "Serverconfiguratie ontbreekt." });
+    return res.status(500).json({ error: "Serverkonfiguration unvollständig." });
   }
 
   let input;
   try {
     input = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
   } catch {
-    return res.status(400).json({ error: "Ongeldige invoer." });
+    return res.status(400).json({ error: "Ungültige Eingabedaten." });
   }
 
   try {
-    // ── Run starten bij Apify ──
+    // ── Apify-Run starten ──
     const startResp = await fetch(
       `https://api.apify.com/v2/acts/${APIFY_ACTOR_ID}/runs?token=${APIFY_TOKEN}`,
       {
@@ -44,13 +44,13 @@ export default async function handler(req, res) {
     const runId = startData?.data?.id;
 
     if (!runId) {
-      return res.status(502).json({ error: "Geen run-ID ontvangen van Apify." });
+      return res.status(502).json({ error: "Keine Run-ID von Apify erhalten." });
     }
 
-    // ── Wachten tot run klaar is (max 120 seconden) ──
-    const maxWait = 120;
+    // ── Warten bis Run abgeschlossen (max. 120 Sekunden) ──
+    const maxWait  = 120;
     const interval = 3;
-    let elapsed = 0;
+    let elapsed    = 0;
 
     while (elapsed < maxWait) {
       await new Promise(r => setTimeout(r, interval * 1000));
@@ -65,10 +65,10 @@ export default async function handler(req, res) {
       if (status === "SUCCEEDED") {
         const storeId = statusData.data.defaultKeyValueStoreId;
 
-        // Rapport-URL opbouwen — token zit server-side, niet in de HTML
+        // Bericht-URL zusammenstellen — Token bleibt serverseitig
         const reportUrl = `https://api.apify.com/v2/key-value-stores/${storeId}/records/audit_report.html`;
 
-        // Metadata ophalen voor resultaatscherm
+        // Metadaten für die Ergebnisanzeige abrufen
         let meta = {};
         try {
           const outResp = await fetch(
@@ -81,13 +81,13 @@ export default async function handler(req, res) {
       }
 
       if (["FAILED", "ABORTED", "TIMED-OUT"].includes(status)) {
-        return res.status(502).json({ error: `Run mislukt: ${status}` });
+        return res.status(502).json({ error: `Berichterstellung fehlgeschlagen: ${status}` });
       }
     }
 
-    return res.status(504).json({ error: "Timeout: rapport duurde te lang." });
+    return res.status(504).json({ error: "Timeout: Berichterstellung hat zu lange gedauert." });
 
   } catch (err) {
-    return res.status(500).json({ error: err.message || "Onbekende serverfout." });
+    return res.status(500).json({ error: err.message || "Unbekannter Serverfehler." });
   }
 }
